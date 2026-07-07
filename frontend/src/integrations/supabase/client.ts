@@ -2,16 +2,78 @@
 import { createClient } from '@supabase/supabase-js';
 import type { Database } from './types';
 
-const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL;
-const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY;
+const SUPABASE_URL = import.meta.env.VITE_SUPABASE_URL || '';
+const SUPABASE_PUBLISHABLE_KEY = import.meta.env.VITE_SUPABASE_PUBLISHABLE_KEY || import.meta.env.VITE_SUPABASE_ANON_KEY || '';
 
-// Import the supabase client like this:
-// import { supabase } from "@/integrations/supabase/client";
+export const supabaseConfigured = Boolean(SUPABASE_URL && SUPABASE_PUBLISHABLE_KEY);
 
-export const supabase = createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
-  auth: {
-    storage: localStorage,
-    persistSession: true,
-    autoRefreshToken: true,
-  }
-});
+// Define a safe mock client if not configured to prevent crashes on startup
+const createMockSupabaseClient = () => {
+  const dummyPromise = () => Promise.resolve({ data: null, error: null });
+  const dummyAuthPromise = () => Promise.resolve({ data: { session: null, user: null }, error: null });
+
+  // A minimal proxy-based stub that handles common operations without throwing
+  const handler = {
+    get(target: any, prop: string): any {
+      if (prop === 'auth') {
+        return {
+          getSession: dummyAuthPromise,
+          getUser: dummyAuthPromise,
+          signUp: dummyAuthPromise,
+          signInWithPassword: dummyAuthPromise,
+          signInWithOAuth: dummyAuthPromise,
+          signOut: dummyPromise,
+          setSession: dummyPromise,
+          onAuthStateChange: () => ({ data: { subscription: { unsubscribe: () => {} } } }),
+        };
+      }
+      if (prop === 'functions') {
+        return {
+          invoke: () => Promise.resolve({ data: null, error: new Error("Supabase is not configured.") }),
+        };
+      }
+      if (prop === 'from') {
+        return () => ({
+          select: () => ({
+            eq: () => ({
+              order: () => Promise.resolve({ data: [], error: null }),
+            }),
+            order: () => Promise.resolve({ data: [], error: null }),
+          }),
+          insert: () => Promise.resolve({ data: null, error: null }),
+          update: () => ({
+            eq: () => Promise.resolve({ data: null, error: null }),
+          }),
+          delete: () => ({
+            eq: () => Promise.resolve({ data: null, error: null }),
+          }),
+        });
+      }
+      if (prop === 'channel') {
+        return () => ({
+          on: () => ({
+            subscribe: () => {},
+          }),
+        });
+      }
+      if (prop === 'removeChannel') {
+        return () => {};
+      }
+      
+      // Fallback: return a function that returns a promise or returns the proxy itself
+      return typeof target[prop] === 'function' ? dummyPromise : new Proxy({}, handler);
+    }
+  };
+
+  return new Proxy({}, handler) as any;
+};
+
+export const supabase = supabaseConfigured
+  ? createClient<Database>(SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY, {
+      auth: {
+        storage: localStorage,
+        persistSession: true,
+        autoRefreshToken: true,
+      }
+    })
+  : createMockSupabaseClient();

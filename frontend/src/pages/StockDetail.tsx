@@ -9,7 +9,8 @@ import CompanyProfileSection from "@/components/CompanyProfileSection";
 import WatchlistButton from "@/components/WatchlistButton";
 import { useStockPrices } from "@/hooks/useStockPrices";
 import { formatCurrency } from "@/lib/currency";
-import { supabase } from "@/integrations/supabase/client";
+import { apiClient } from "@/lib/apiClient";
+import CoreQuestionsOverview from "@/components/CoreQuestionsOverview";
 
 const timeframes = ["1D", "1W", "1M", "3M", "1Y", "5Y", "MAX"] as const;
 const tfDays: Record<string, number> = { "1D": 1, "1W": 7, "1M": 30, "3M": 90, "1Y": 365, "5Y": 1825, "MAX": 3650 };
@@ -39,39 +40,42 @@ export default function StockDetail() {
     setAiLoading(true);
     setAiContent("");
     try {
-      const { data, error } = await supabase.functions.invoke("stock-advisor", {
-        body: {
-          stream: false,
-          messages: [{
-            role: "user",
-            content: `Generate an Institutional AI Intelligence Report for ${stock.name} (${stock.symbol}) on ${stock.exchange}. Current price: ${stock.price}, P/E: ${stock.pe ?? "n/a"}, 52W High: ${stock.high52w ?? "n/a"}, 52W Low: ${stock.low52w ?? "n/a"}, Sector: ${stock.sector}.
-Format the response exactly with these sections using Markdown headers:
-1. Business Summary
-2. Growth Drivers
-3. Revenue Trends
-4. Technical Trend
-5. Valuation Snapshot
-6. Sentiment Analysis
-7. Risks
-8. Opportunities
-9. Verdict: Buy/Hold/Watch
-10. Confidence %`,
-          }],
-        },
-      });
-      if (error) throw error;
-      if (typeof data === "string") setAiContent(data);
-      else if (data?.content) setAiContent(data.content);
-      else if (data?.error) throw new Error(data.error);
-      else setAiContent("Analysis unavailable.");
-    } catch (e: any) {
+      const res = await apiClient.post<any>("/api/ai/report", { symbol: stock.symbol });
+      const data = res.data || res; // depending on FallbackResponse structure
+      const markdown = `
+### ${data.company_summary || "Analysis Report"}
+
+**Final Analysis**: ${data.final_analysis_summary || ""}
+
+**Technical**: ${data.technical_analysis || ""}
+**Sentiment**: ${data.sentiment_analysis || ""}
+**Prediction**: ${data.prediction_insight || ""}
+
+**Risks**:
+${(data.risk_factors || []).map((r: string) => `- ${r}`).join('\\n')}
+
+**Limitations**:
+${(data.limitations || []).map((l: string) => `- ${l}`).join('\\n')}
+
+*${data.disclaimer || ""}*
+`;
+      setAiContent(markdown);
+    } catch (e: unknown) {
       console.error("AI advisor error", e);
-      const msg = e?.message?.toLowerCase().includes("rate") ? "Rate limit hit."
-        : e?.message?.toLowerCase().includes("credit") ? "AI credits exhausted."
-        : "Could not load AI analysis.";
-      setAiError(msg);
+      setAiError(e instanceof Error ? e.message : "Could not load AI analysis.");
     } finally {
       setAiLoading(false);
+    }
+  };
+
+  const handleCompare = async () => {
+    try {
+      const res = await apiClient.post<any>("/api/stocks/compare", { symbols: [stock.symbol, "AAPL"] });
+      console.log(res);
+      alert(`Comparison data retrieved for ${stock.symbol} and AAPL. Check console for details.`);
+    } catch (e: unknown) {
+      console.error(e);
+      alert("Failed to compare");
     }
   };
 
@@ -106,6 +110,15 @@ Format the response exactly with these sections using Markdown headers:
                 <span className="text-[10px] font-bold tracking-widest text-blue-accent uppercase bg-blue-accent/10 border border-blue-accent/20 px-2 py-0.5 rounded">
                   {stock.exchange}
                 </span>
+                {meta?.delay_label && (
+                  <span className={`text-[10px] font-bold tracking-widest uppercase px-2 py-0.5 rounded border ${
+                    meta.delay_label.includes("LIVE") 
+                      ? "text-green-gain bg-green-gain/10 border-green-gain/20" 
+                      : "text-orange-500 bg-orange-500/10 border-orange-500/20"
+                  }`}>
+                    {meta.delay_label} {meta.source && `(${meta.source})`}
+                  </span>
+                )}
               </div>
               <div className="text-text-muted text-sm font-medium">{stock.name}</div>
             </div>
@@ -132,7 +145,7 @@ Format the response exactly with these sections using Markdown headers:
               </button>
               <div className="flex gap-2">
                 <WatchlistButton symbol={stock.symbol} exchange={stock.exchange} size="md" />
-                <button className="bg-bg-secondary text-text-primary border border-border hover:bg-blue-accent/10 hover:border-blue-accent/30 hover:text-blue-accent px-4 py-2 rounded-xl font-bold text-sm transition-all flex-1">
+                <button onClick={handleCompare} className="bg-bg-secondary text-text-primary border border-border hover:bg-blue-accent/10 hover:border-blue-accent/30 hover:text-blue-accent px-4 py-2 rounded-xl font-bold text-sm transition-all flex-1">
                   Compare
                 </button>
               </div>
@@ -159,6 +172,9 @@ Format the response exactly with these sections using Markdown headers:
         ))}
       </div>
 
+      {activeTab === "Overview" ? (
+        <CoreQuestionsOverview stock={stock} meta={meta} />
+      ) : (
       <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
         
         {/* ── LEFT COLUMN (Main Content) ── */}
@@ -378,6 +394,7 @@ Format the response exactly with these sections using Markdown headers:
 
         </div>
       </div>
+      )}
     </div>
   );
 }

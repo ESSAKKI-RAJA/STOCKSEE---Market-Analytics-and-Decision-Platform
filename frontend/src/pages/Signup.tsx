@@ -1,15 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Mail, Lock, User as UserIcon, Eye, EyeOff, Loader2 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
+import { apiClient } from "@/lib/apiClient";
 import StockSeeLogo from "@/components/StockSeeLogo";
 
 export default function Signup() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, loading: authLoading } = useAuth();
+  const { user, login, loading: authLoading } = useAuth();
   const [name, setName] = useState("");
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -32,17 +32,13 @@ export default function Signup() {
     e.preventDefault();
     setLoading(true);
     try {
-      const { error } = await supabase.auth.signUp({
-        email,
+      const data = await apiClient.post<{ id: string, email: string, full_name: string }>("/api/auth/register", { 
+        email, 
         password,
-        options: {
-          emailRedirectTo: `${window.location.origin}/auth/callback`,
-          data: { name },
-        },
+        full_name: name 
       });
-      if (error) throw error;
       setDone(true);
-      toast.success("Account created! Check your email to verify.");
+      toast.success("Account created! You can now sign in.");
     } catch (err: unknown) {
       toast.error(err instanceof Error ? err.message : "Sign up failed");
     } finally {
@@ -51,19 +47,7 @@ export default function Signup() {
   };
 
   const handleGoogle = async () => {
-    setLoading(true);
-    try {
-      sessionStorage.setItem("auth:redirect", redirectTo);
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: { redirectTo: `${window.location.origin}/auth/callback` },
-      });
-      if (error) throw error;
-      if (data?.url) window.location.assign(data.url);
-    } catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : "Google sign-up failed");
-      setLoading(false);
-    }
+    toast.error("Google sign-in is not supported right now");
   };
 
   if (done) {

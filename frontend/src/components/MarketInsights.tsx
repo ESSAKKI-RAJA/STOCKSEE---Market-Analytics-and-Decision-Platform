@@ -9,7 +9,7 @@ interface NewsItem {
   url: string;
 }
 
-const iconMap: Record<string, any> = {
+const iconMap: Record<string, React.ElementType> = {
   india: TrendingUp,
   usa: Zap,
   global: Globe,

@@ -52,8 +52,8 @@ export default function Auth() {
         toast.success("Welcome back!");
         navigate(redirectTo, { replace: true });
       }
-    } catch (err: any) {
-      toast.error(err.message || "Authentication failed");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Authentication failed");
     } finally {
       setLoading(false);
     }
@@ -72,8 +72,8 @@ export default function Auth() {
       if (error) throw error;
       // In OAuth, Supabase redirects; if not, fall back to returned URL.
       if (data?.url) window.location.assign(data.url);
-    } catch (err: any) {
-      toast.error(err?.message || "Google sign-in failed");
+    } catch (err: unknown) {
+      toast.error(err instanceof Error ? err.message : "Google sign-in failed");
       setLoading(false);
     }
   };

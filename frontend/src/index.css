@@ -1,4 +1,4 @@
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&family=Syne:wght@400;500;600;700;800&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
 
 @tailwind base;
 @tailwind components;
@@ -6,73 +6,84 @@
 
 @layer base {
   :root {
-    --bg-primary: #05070d;
-    --bg-secondary: #0b1220;
-    --card-surface: #101826;
-    --border-color: #1e293b;
+    /* 
+      STOCKSEE V4 Design Language 
+      Minimal, Professional, Institutional, Premium
+    */
+    --bg-primary: #000000;
+    --bg-secondary: #0A0A0A;
+    --card-surface: #121212;
+    --border-color: #27272A;
     
-    --text-primary: #f8fafc;
-    --text-muted: #94a3b8;
+    --text-primary: #FAFAFA;
+    --text-secondary: #A1A1AA;
+    --text-muted: #71717A;
     
-    --blue-accent: #2563ff;
-    --purple-accent: #7c3aed;
-    --green-gain: #10b981;
-    --red-loss: #ef4444;
-    --gold-premium: #f59e0b;
+    /* Institutional Accent Colors */
+    --blue-accent: #2563EB;
+    --blue-hover: #3B82F6;
+    --blue-muted: rgba(37, 99, 235, 0.15);
+    
+    --purple-accent: #7C3AED;
+    --green-gain: #10B981;
+    --green-muted: rgba(16, 185, 129, 0.15);
+    --red-loss: #EF4444;
+    --red-muted: rgba(239, 68, 68, 0.15);
+    --gold-premium: #F59E0B;
 
-    /* Shadcn defaults mapped to our V2 colors */
-    --background: 228 45% 4%; /* #05070d */
-    --foreground: 210 40% 98%; /* #f8fafc */
+    /* Shadcn mapping */
+    --background: 0 0% 0%; /* #000000 */
+    --foreground: 0 0% 98%; /* #FAFAFA */
     
-    --card: 220 41% 11%; /* #101826 */
-    --card-foreground: 210 40% 98%;
+    --card: 0 0% 7%; /* #121212 */
+    --card-foreground: 0 0% 98%;
     
-    --popover: 220 41% 11%;
-    --popover-foreground: 210 40% 98%;
+    --popover: 0 0% 7%;
+    --popover-foreground: 0 0% 98%;
     
-    --primary: 223 100% 57%; /* #2563ff */
-    --primary-foreground: 210 40% 98%;
+    --primary: 221 83% 53%; /* #2563EB */
+    --primary-foreground: 0 0% 98%;
     
-    --secondary: 221 49% 8%; /* #0b1220 */
-    --secondary-foreground: 210 40% 98%;
+    --secondary: 0 0% 4%; /* #0A0A0A */
+    --secondary-foreground: 0 0% 98%;
     
-    --muted: 221 49% 8%;
-    --muted-foreground: 215 25% 65%; /* #94a3b8 */
+    --muted: 0 0% 4%;
+    --muted-foreground: 240 5% 65%; /* #A1A1AA */
     
-    --accent: 262 83% 58%; /* #7c3aed */
-    --accent-foreground: 210 40% 98%;
+    --accent: 262 83% 58%; /* #7C3AED */
+    --accent-foreground: 0 0% 98%;
     
-    --destructive: 0 84% 60%; /* #ef4444 */
-    --destructive-foreground: 210 40% 98%;
+    --destructive: 0 84% 60%; /* #EF4444 */
+    --destructive-foreground: 0 0% 98%;
     
-    --border: 217 33% 17%; /* #1e293b */
-    --input: 217 33% 17%;
-    --ring: 223 100% 57%;
+    --border: 240 6% 16%; /* #27272A */
+    --input: 240 6% 16%;
+    --ring: 221 83% 53%;
     
-    --radius: 1rem; /* 16px standard rounded */
+    --radius: 0.5rem; /* 8px sharper corners for institutional feel */
   }
 
   .dark {
-    /* Since we want a dark institutional terminal, the default is already dark, but we keep the class for compatibility */
-    --background: 228 45% 4%;
-    --foreground: 210 40% 98%;
-    --card: 220 41% 11%;
-    --card-foreground: 210 40% 98%;
-    --popover: 220 41% 11%;
-    --popover-foreground: 210 40% 98%;
-    --primary: 223 100% 57%;
-    --primary-foreground: 210 40% 98%;
-    --secondary: 221 49% 8%;
-    --secondary-foreground: 210 40% 98%;
-    --muted: 221 49% 8%;
-    --muted-foreground: 215 25% 65%;
+    /* Hardcode dark mode mappings */
+    --background: 0 0% 0%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 7%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 7%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 221 83% 53%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 4%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 4%;
+    --muted-foreground: 240 5% 65%;
     --accent: 262 83% 58%;
-    --accent-foreground: 210 40% 98%;
+    --accent-foreground: 0 0% 98%;
     --destructive: 0 84% 60%;
-    --destructive-foreground: 210 40% 98%;
-    --border: 217 33% 17%;
-    --input: 217 33% 17%;
-    --ring: 223 100% 57%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 6% 16%;
+    --input: 240 6% 16%;
+    --ring: 221 83% 53%;
   }
 
   * { @apply border-border box-border; }
@@ -81,7 +92,7 @@
 
   body {
     font-family: 'Inter', system-ui, -apple-system, sans-serif;
-    font-feature-settings: "tnum";
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11", "tnum"; /* Enhanced readability */
     background-color: var(--bg-primary);
     color: var(--text-primary);
     min-height: 100vh;
@@ -90,8 +101,8 @@
     -moz-osx-font-smoothing: grayscale;
   }
 
-  ::-webkit-scrollbar { width: 6px; height: 6px; }
-  ::-webkit-scrollbar-track { background: var(--bg-primary); }
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
   ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
   ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
 
@@ -101,47 +112,29 @@
   }
 }
 
-@keyframes live-glow {
-  0%, 100% {
-    box-shadow: 0 0 3px 1px rgba(0, 255, 136, 0.35);
-    opacity: 0.75;
-  }
-  50% {
-    box-shadow: 0 0 10px 3px rgba(0, 255, 136, 0.85);
-    opacity: 1;
-  }
+@keyframes live-flash-green {
+  0% { background-color: var(--green-muted); color: var(--green-gain); }
+  100% { background-color: transparent; color: inherit; }
+}
+@keyframes live-flash-red {
+  0% { background-color: var(--red-muted); color: var(--red-loss); }
+  100% { background-color: transparent; color: inherit; }
 }
 
-.animate-live-glow {
-  animation: live-glow 1.6s ease-in-out infinite;
-}
+.flash-green { animation: live-flash-green 1s ease-out; }
+.flash-red { animation: live-flash-red 1s ease-out; }
 
 @layer components {
-  .t-panel {
-    background: var(--panel-1);
-    border: 1px solid var(--border-1);
-    border-radius: 0.75rem;
-    box-shadow: 0 4px 24px -1px rgba(0, 0, 0, 0.05);
-    transition: all 0.2s ease;
+  /* Legacy compat wrapped in V4 aesthetics */
+  .t-panel, .card-pro, .card-float, .glass-panel {
+    background: var(--card-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    transition: border-color 0.2s ease;
   }
-
-  .t-panel:hover {
-    box-shadow: 0 8px 32px -1px rgba(0, 0, 0, 0.3), 0 0 15px rgba(59, 130, 246, 0.1);
-    border-color: rgba(59, 130, 246, 0.3);
-    transform: translateY(-2px);
-  }
-
-  .t-panel-2 {
-    background: var(--panel-2);
-    border: 1px solid var(--border-1);
-    border-radius: 0.5rem;
-  }
-
-  .glass-panel {
-    background: var(--panel-1);
-    border: 1px solid var(--border-1);
-    border-radius: 1rem;
-    box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.05);
+  
+  .t-panel:hover, .card-pro:hover {
+    border-color: rgba(255, 255, 255, 0.15);
   }
 
   .t-header {
@@ -149,18 +142,32 @@
     align-items: center;
     justify-content: space-between;
     padding: 12px 16px;
-    border-bottom: 1px solid var(--border-1);
-    background: var(--surface-2);
-    border-top-left-radius: 0.75rem;
-    border-top-right-radius: 0.75rem;
+    border-bottom: 1px solid var(--border-color);
   }
 
   .t-label {
     font-size: 11px;
-    font-weight: 600;
+    font-weight: 500;
     letter-spacing: 0.05em;
     text-transform: uppercase;
     color: var(--text-muted);
+  }
+
+  /* Core UI elements */
+  .stocksee-card {
+    @apply bg-[#121212] border border-[#27272A] rounded-lg p-5;
+  }
+  .stocksee-card-header {
+    @apply text-xs font-semibold uppercase tracking-wider text-[#A1A1AA] mb-4;
+  }
+  .stocksee-data-row {
+    @apply flex justify-between items-center py-2 border-b border-[#27272A]/50 last:border-0;
+  }
+  .stocksee-data-label {
+    @apply text-sm text-[#A1A1AA];
+  }
+  .stocksee-data-value {
+    @apply text-sm font-medium font-mono text-[#FAFAFA];
   }
 
   .t-table {
@@ -172,40 +179,30 @@
 
   .t-table thead th {
     font-size: 11px;
-    font-weight: 600;
+    font-weight: 500;
     letter-spacing: 0.05em;
     text-transform: uppercase;
     color: var(--text-muted);
     padding: 12px 16px;
     text-align: right;
-    border-bottom: 1px solid var(--border-1);
-    background: var(--surface-2);
+    border-bottom: 1px solid var(--border-color);
     white-space: nowrap;
   }
-
   .t-table thead th:first-child { text-align: left; }
 
-  .t-table tbody tr {
-    transition: all 0.2s;
-    cursor: pointer;
-  }
-
-  .t-table tbody tr:hover { 
-    background: rgba(59, 130, 246, 0.05);
-  }
+  .t-table tbody tr { transition: all 0.2s; cursor: pointer; }
+  .t-table tbody tr:hover { background: rgba(255, 255, 255, 0.03); }
 
   .t-table tbody td {
     padding: 12px 16px;
     font-family: 'JetBrains Mono', monospace;
     font-size: 13px;
     text-align: right;
-    color: var(--text-1);
+    color: var(--text-primary);
     white-space: nowrap;
-    border-bottom: 1px solid var(--border-1);
+    border-bottom: 1px solid var(--border-color);
   }
-
   .t-table tbody tr:last-child td { border-bottom: none; }
-
   .t-table tbody td:first-child {
     text-align: left;
     font-family: 'Inter', sans-serif;
@@ -213,106 +210,46 @@
     font-size: 14px;
   }
 
-  .t-input {
-    background: var(--surface-2);
-    border: 1px solid var(--border-1);
-    border-radius: 0.5rem;
-    color: var(--text-1);
+  .t-input, .input-pro {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-primary);
     font-size: 14px;
-    padding: 10px 14px;
+    padding: 8px 12px;
     outline: none;
     transition: all 0.2s;
     width: 100%;
   }
-
-  .t-input::placeholder { color: var(--text-muted); }
-
-  .t-input:focus { 
-    border-color: var(--blue);
-    box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.2);
-  }
-
-  .t-btn {
-    background: var(--surface-2);
-    border: 1px solid var(--border-1);
-    border-radius: 0.5rem;
-    color: var(--text-1);
-    font-size: 13px;
-    font-weight: 500;
-    padding: 8px 16px;
-    cursor: pointer;
-    transition: all 0.2s;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    gap: 8px;
-  }
-
-  .t-btn:hover {
-    background: rgba(59, 130, 246, 0.1);
-    border-color: var(--blue);
-    color: var(--blue-hover);
-  }
-
-  .t-btn-primary {
-    background: var(--blue);
-    color: white;
-    border: none;
-    font-weight: 600;
-    box-shadow: 0 4px 14px 0 rgba(59, 130, 246, 0.39);
-  }
-
-  .t-btn-primary:hover {
-    background: var(--blue-hover);
-    box-shadow: 0 6px 20px rgba(59, 130, 246, 0.5);
-    transform: translateY(-1px);
+  .t-input:focus, .input-pro:focus { 
+    border-color: var(--blue-accent);
   }
 
   .t-badge {
     font-size: 11px;
-    font-weight: 600;
+    font-weight: 500;
     padding: 2px 8px;
-    border-radius: 9999px;
+    border-radius: 4px;
     display: inline-flex;
     align-items: center;
     justify-content: center;
   }
 
-  .t-up { color: var(--green); }
-  .t-down { color: var(--red); }
+  .t-up { color: var(--green-gain); }
+  .t-down { color: var(--red-loss); }
   .t-flat { color: var(--text-muted); }
 
-  .bg-up { background: rgba(16, 185, 129, 0.1); color: var(--green); }
-  .bg-down { background: rgba(239, 68, 68, 0.1); color: var(--red); }
+  .bg-up { background: var(--green-muted); color: var(--green-gain); }
+  .bg-down { background: var(--red-muted); color: var(--red-loss); }
 
-  .t-live {
-    display: inline-block;
-    width: 8px; height: 8px;
-    border-radius: 50%;
-    background: var(--blue);
-    box-shadow: 0 0 8px var(--blue);
-    animation: pulse-blue 2s infinite;
+  .btn-primary, .t-btn-primary {
+    @apply bg-blue-600 hover:bg-blue-700 text-white border-0 font-medium px-4 py-2 rounded-md transition-colors text-sm;
   }
-
-  /* Legacy Compat */
-  .card-pro { @apply t-panel p-6; }
-  .card-float { @apply t-panel; }
-  .btn-primary { @apply t-btn t-btn-primary; }
-  .btn-secondary { @apply t-btn; }
-  .input-pro { @apply t-input; }
-  .section-heading { font-weight: 600; font-size: 1.25rem; color: var(--text-1); }
-  .text-gradient-gold {
-    background: linear-gradient(90deg, #3B82F6 0%, #60A5FA 100%);
-    -webkit-background-clip: text;
-    -webkit-text-fill-color: transparent;
-    background-clip: text;
+  .btn-secondary, .t-btn {
+    @apply bg-[#121212] hover:bg-[#1A1A1D] border border-[#27272A] text-white font-medium px-4 py-2 rounded-md transition-colors text-sm;
   }
-}
-
-@keyframes pulse-blue {
-  0% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0.7); }
-  70% { box-shadow: 0 0 0 6px rgba(59, 130, 246, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(59, 130, 246, 0); }
+  
+  .section-heading { font-weight: 500; font-size: 1.25rem; color: var(--text-primary); }
 }
 
 @layer utilities {
@@ -324,9 +261,9 @@
   .tnum { font-feature-settings: "tnum"; }
   
   .glass-effect {
-    background: rgba(11, 18, 32, 0.6);
-    backdrop-filter: blur(12px);
-    -webkit-backdrop-filter: blur(12px);
+    background: rgba(10, 10, 10, 0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
     border: 1px solid rgba(255, 255, 255, 0.05);
   }
 }

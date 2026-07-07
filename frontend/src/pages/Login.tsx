@@ -1,15 +1,15 @@
 import { useEffect, useMemo, useState } from "react";
 import { Link, useLocation, useNavigate } from "react-router-dom";
 import { Mail, Lock, Eye, EyeOff, Loader2 } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
 import { toast } from "sonner";
 import { useAuth } from "@/contexts/AuthContext";
+import { apiClient } from "@/lib/apiClient";
 import StockSeeLogo from "@/components/StockSeeLogo";
 
 export default function Login() {
   const navigate = useNavigate();
   const location = useLocation();
-  const { user, loading: authLoading } = useAuth();
+  const { user, login, loading: authLoading } = useAuth();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
   const [showPassword, setShowPassword] = useState(false);
@@ -30,8 +30,8 @@ export default function Login() {
     e.preventDefault();
     setLoading(true);
     try {
-      const { error } = await supabase.auth.signInWithPassword({ email, password });
-      if (error) throw error;
+      const data = await apiClient.post<{ access_token: string }>("/api/auth/login", { email, password });
+      login(data.access_token, { id: "0", email, is_active: true });
       toast.success("Welcome back!");
       navigate(redirectTo, { replace: true });
     } catch (err: unknown) {
@@ -42,19 +42,7 @@ export default function Login() {
   };
 
   const handleGoogle = async () => {
-    setLoading(true);
-    try {
-      sessionStorage.setItem("auth:redirect", redirectTo);
-      const { data, error } = await supabase.auth.signInWithOAuth({
-        provider: "google",
-        options: { redirectTo: `${window.location.origin}/auth/callback` },
-      });
-      if (error) throw error;
-      if (data?.url) window.location.assign(data.url);
-    } catch (err: unknown) {
-      toast.error(err instanceof Error ? err.message : "Google sign-in failed");
-      setLoading(false);
-    }
+    toast.error("Google sign-in is not supported right now");
   };
 
   return (

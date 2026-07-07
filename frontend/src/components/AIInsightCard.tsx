@@ -1,26 +1,27 @@
-import { Activity, Minus, Cpu } from "lucide-react";
+import { Activity, Cpu } from "lucide-react";
 import { useStockAnalysis } from "@/hooks/useStockAnalysis";
+import StatusBadge from "./StatusBadge";
 
 interface Props {
   symbol: string;
   exchange?: string;
 }
 
-const trendIcon = {
+const trendIcon: Record<string, string> = {
   bullish: "▲",
   bearish: "▼",
   sideways: "■",
 };
 
-const trendCls = {
+const trendCls: Record<string, string> = {
   bullish: "text-[var(--green)]",
   bearish: "text-[var(--red)]",
   sideways: "text-[var(--text-muted)]",
 };
 
-const riskCls = {
+const riskCls: Record<string, string> = {
   low: "text-[var(--green)]",
-  medium: "text-[var(--blue)]", // Or yellow/orange, but electric blue is preferred for medium/normal
+  medium: "text-[var(--blue)]",
   high: "text-[var(--red)]",
 };
 
@@ -40,7 +41,7 @@ export default function AIInsightCard({ symbol, exchange }: Props) {
         </span>
         {data && (
           <span className="text-[10px] text-[var(--blue)] font-mono tracking-wider bg-[rgba(59,130,246,0.1)] px-2 py-1 rounded border border-[rgba(59,130,246,0.2)]">
-            [{data.cached ? "CACHE" : "LIVE"} · {data.confidence}% CONF]
+            [{data.mode === "real" ? "LIVE" : data.mode === "mixed" ? "MIXED" : "DEMO"} · {data.confidence}% CONF]
           </span>
         )}
       </div>
@@ -61,6 +62,16 @@ export default function AIInsightCard({ symbol, exchange }: Props) {
 
         {data && !loading && (
           <div className="flex flex-col gap-5">
+            {/* Mode/Source badge */}
+            <StatusBadge
+              responseMode={data.mode}
+              responseSource={data.source}
+              generatedAt={data.generatedAt}
+              confidence={String(data.confidence)}
+              cacheHit={data.cached}
+              variant="inline"
+            />
+
             <p className="text-sm text-[var(--text-1)] leading-relaxed italic border-l-2 border-[var(--blue)] pl-3">
               "{data.insight}"
             </p>
@@ -76,8 +87,8 @@ export default function AIInsightCard({ symbol, exchange }: Props) {
                 <tbody className="divide-y divide-[var(--border-1)]">
                   <tr className="hover:bg-[rgba(59,130,246,0.02)] transition-colors">
                     <td className="py-2.5 px-3 text-xs text-[var(--text-muted)]">Trend</td>
-                    <td className={`py-2.5 px-3 text-xs font-bold text-right ${trendCls[data.trend]}`}>
-                      {trendIcon[data.trend]} {data.trend.toUpperCase()}
+                    <td className={`py-2.5 px-3 text-xs font-bold text-right ${trendCls[data.trend] || "text-[var(--text-muted)]"}`}>
+                      {trendIcon[data.trend] || "■"} {data.trend.toUpperCase()}
                     </td>
                   </tr>
                   <tr className="hover:bg-[rgba(59,130,246,0.02)] transition-colors">
@@ -88,7 +99,7 @@ export default function AIInsightCard({ symbol, exchange }: Props) {
                   </tr>
                   <tr className="hover:bg-[rgba(59,130,246,0.02)] transition-colors">
                     <td className="py-2.5 px-3 text-xs text-[var(--text-muted)]">Risk</td>
-                    <td className={`py-2.5 px-3 text-xs font-bold text-right ${riskCls[data.risk]}`}>
+                    <td className={`py-2.5 px-3 text-xs font-bold text-right ${riskCls[data.risk] || "text-[var(--text-muted)]"}`}>
                       {data.risk.toUpperCase()}
                     </td>
                   </tr>
@@ -120,6 +131,13 @@ export default function AIInsightCard({ symbol, exchange }: Props) {
                 </tbody>
               </table>
             </div>
+
+            {/* Limitations notice */}
+            {data.limitations && (
+              <div className="text-[10px] text-[var(--text-muted)] font-mono border-t border-[var(--border-1)] pt-2 mt-1">
+                ⚠ {data.limitations}
+              </div>
+            )}
           </div>
         )}
       </div>

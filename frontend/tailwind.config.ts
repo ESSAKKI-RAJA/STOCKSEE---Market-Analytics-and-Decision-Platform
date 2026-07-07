@@ -15,70 +15,70 @@ export default {
     extend: {
       fontFamily: {
         sans: ["Inter", "sans-serif"],
-        heading: ["Syne", "Inter", "sans-serif"],
+        heading: ["Inter", "sans-serif"], // Clean institutional heading
         body: ["Inter", "sans-serif"],
         mono: ["'JetBrains Mono'", "monospace"],
-        display: ["Syne", "Inter", "sans-serif"],
+        display: ["Inter", "sans-serif"],
       },
       colors: {
-        border: "#1E293B",
-        input: "#1E293B",
-        ring: "#2563FF",
-        background: "#05070D",
-        foreground: "#F8FAFC",
-        surface: "#101826",
-        "bg-secondary": "#0B1220",
+        border: "#27272A",
+        input: "#27272A",
+        ring: "#2563EB",
+        background: "#000000",
+        foreground: "#FAFAFA",
+        surface: "#121212",
+        "bg-secondary": "#0A0A0A",
         
-        "blue-accent": "#2563FF",
+        "blue-accent": "#2563EB",
         "purple-accent": "#7C3AED",
         "green-gain": "#10B981",
         "red-loss": "#EF4444",
         "gold-premium": "#F59E0B",
         
         primary: {
-          DEFAULT: "#2563FF",
-          foreground: "#F8FAFC",
+          DEFAULT: "#2563EB",
+          foreground: "#FAFAFA",
         },
         secondary: {
-          DEFAULT: "#0B1220",
-          foreground: "#94A3B8",
+          DEFAULT: "#0A0A0A",
+          foreground: "#A1A1AA",
         },
         destructive: {
           DEFAULT: "#EF4444",
-          foreground: "#F8FAFC",
+          foreground: "#FAFAFA",
         },
         muted: {
-          DEFAULT: "#1E293B",
-          foreground: "#94A3B8",
+          DEFAULT: "#0A0A0A",
+          foreground: "#71717A",
         },
         accent: {
-          DEFAULT: "#2563FF",
-          foreground: "#F8FAFC",
+          DEFAULT: "#2563EB",
+          foreground: "#FAFAFA",
           hover: "#3B82F6",
         },
         popover: {
-          DEFAULT: "#101826",
-          foreground: "#F8FAFC",
+          DEFAULT: "#121212",
+          foreground: "#FAFAFA",
         },
         card: {
-          DEFAULT: "#101826",
-          foreground: "#F8FAFC",
+          DEFAULT: "#121212",
+          foreground: "#FAFAFA",
         },
         sidebar: {
-          DEFAULT: "#05070D",
-          foreground: "#94A3B8",
-          primary: "#2563FF",
-          "primary-foreground": "#F8FAFC",
-          accent: "#101826",
-          "accent-foreground": "#F8FAFC",
-          border: "#1E293B",
-          ring: "#2563FF",
+          DEFAULT: "#000000",
+          foreground: "#A1A1AA",
+          primary: "#2563EB",
+          "primary-foreground": "#FAFAFA",
+          accent: "#121212",
+          "accent-foreground": "#FAFAFA",
+          border: "#27272A",
+          ring: "#2563EB",
         },
       },
       borderRadius: {
-        lg: "1.5rem", // 24px
-        md: "1rem", // 16px
-        sm: "0.5rem",
+        lg: "0.5rem", // 8px for sharper institutional feel
+        md: "0.375rem", // 6px
+        sm: "0.25rem", // 4px
       },
       keyframes: {
         "accordion-down": {
@@ -101,10 +101,6 @@ export default {
           "0%, 100%": { opacity: "0.5", transform: "scale(1)" },
           "50%": { opacity: "1", transform: "scale(1.05)" },
         },
-        "glow-ring": {
-          "0%, 100%": { boxShadow: "0 0 12px 2px rgba(59,130,246,0.25)" },
-          "50%": { boxShadow: "0 0 28px 6px rgba(59,130,246,0.5)" },
-        },
         "slide-in-right": {
           from: { opacity: "0", transform: "translateX(40px)" },
           to: { opacity: "1", transform: "translateX(0)" },
@@ -113,10 +109,6 @@ export default {
           from: { opacity: "0", transform: "translateY(24px)" },
           to: { opacity: "1", transform: "translateY(0)" },
         },
-        "shimmer": {
-          "0%": { backgroundPosition: "-200% 0" },
-          "100%": { backgroundPosition: "200% 0" },
-        },
       },
       animation: {
         "accordion-down": "accordion-down 0.2s ease-out",
@@ -124,10 +116,8 @@ export default {
         "ticker-scroll": "ticker-scroll 30s linear infinite",
         "float-up": "float-up 4s ease-in-out infinite",
         "glow-pulse": "glow-pulse 2.5s ease-in-out infinite",
-        "glow-ring": "glow-ring 2.5s ease-in-out infinite",
         "slide-in-right": "slide-in-right 0.6s ease-out forwards",
         "fade-in-up": "fade-in-up 0.7s ease-out forwards",
-        "shimmer": "shimmer 2.5s linear infinite",
       },
       backdropBlur: {
         xs: "2px",

@@ -8,7 +8,7 @@ const NAV = [
   { path: "/",          label: "Dashboard",    icon: LayoutGrid },
   { path: "/analyse",   label: "Analyse",      icon: Activity },
   { path: "/watchlist", label: "Watchlist",    icon: Star },
-  { path: "/portfolio", label: "Portfolio",    icon: Briefcase },
+
   { path: "/alerts",    label: "Alerts",       icon: Zap },
   { path: "/news",      label: "News Center",  icon: Newspaper },
   { path: "/heatmaps",  label: "Heatmaps",     icon: Map },

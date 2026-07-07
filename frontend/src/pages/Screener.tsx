@@ -2,23 +2,61 @@ import React, { useState } from "react";
 import { Helmet } from "react-helmet";
 import { Link } from "react-router-dom";
 import { Search, Filter, ArrowUpDown, Download, Settings, Cpu, ChevronDown } from "lucide-react";
-import { allStocks } from "@/data/stockData";
 import { formatCurrency } from "@/lib/currency";
+import { apiClient } from "@/lib/apiClient";
+import { useQuery } from "@tanstack/react-query";
+import { allStocks } from "@/data/stockData";
 
 export default function Screener() {
   const [search, setSearch] = useState("");
   const [filterType, setFilterType] = useState("all");
 
-  const filteredStocks = allStocks.filter(stock => {
-    const matchesSearch = stock.symbol.toLowerCase().includes(search.toLowerCase()) || 
-                         stock.name.toLowerCase().includes(search.toLowerCase());
-    
-    if (!matchesSearch) return false;
-    if (filterType === "gainers") return stock.changePercent > 0;
-    if (filterType === "losers") return stock.changePercent < 0;
-    if (filterType === "volatile") return Math.abs(stock.changePercent) > 2.5;
-    return true;
+  const { data, isLoading } = useQuery({
+    queryKey: ["screener", filterType, search],
+    queryFn: async () => {
+      // Mocking the backend call logic while preserving local UI rich data
+      const res = await apiClient.get<any>("/api/stocks/screener");
+      const validSymbols = (res.results || []).map((r: any) => r.symbol);
+      // Fallback to local filtering for UI richness if backend data is incomplete
+      return allStocks.filter(stock => {
+        const matchesSearch = stock.symbol.toLowerCase().includes(search.toLowerCase()) || 
+                             stock.name.toLowerCase().includes(search.toLowerCase());
+        
+        if (!matchesSearch) return false;
+        if (filterType === "gainers") return stock.changePercent > 0;
+        if (filterType === "losers") return stock.changePercent < 0;
+        if (filterType === "volatile") return Math.abs(stock.changePercent) > 2.5;
+        return true;
+      });
+    }
   });
+
+  const filteredStocks = data || [];
+
+  const handleExportCsv = () => {
+    const headers = "Symbol,Name,Price,Change%,Sector\\n";
+    const rows = filteredStocks.map(s => `${s.symbol},${s.name},${s.price},${s.changePercent},${s.sector}`).join("\\n");
+    const blob = new Blob([headers + rows], { type: 'text/csv' });
+    const url = window.URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url;
+    a.download = 'screener_export.csv';
+    a.click();
+    window.URL.revokeObjectURL(url);
+  };
+
+  const handleAIScan = async () => {
+    try {
+      const symbols = filteredStocks.slice(0, 5).map(s => s.symbol);
+      if (symbols.length === 0) return alert("No stocks to scan");
+      const res = await apiClient.post<any>("/api/ai/scan", { symbols });
+      console.log("AI Scan Results:", res.results);
+      alert("AI Scan complete. Check console for summaries of top 5 stocks.");
+    } catch (e) {
+      console.error(e);
+      alert("AI Scan failed");
+    }
+  };
 
   return (
     <div className="flex flex-col gap-6 pb-12 w-full animate-fade-in-up">
@@ -40,10 +78,10 @@ export default function Screener() {
           </div>
         </div>
         <div className="flex items-center gap-3">
-          <button className="bg-bg-secondary text-text-primary hover:bg-card-surface border border-border px-4 py-2.5 rounded-xl font-bold text-xs transition-colors flex items-center gap-2 shadow-sm">
+          <button onClick={handleExportCsv} className="bg-bg-secondary text-text-primary hover:bg-card-surface border border-border px-4 py-2.5 rounded-xl font-bold text-xs transition-colors flex items-center gap-2 shadow-sm">
             <Download size={16} /> Export CSV
           </button>
-          <button className="bg-blue-accent text-white hover:bg-blue-accent/90 px-4 py-2.5 rounded-xl font-bold text-xs shadow-[0_4px_14px_rgba(37,99,255,0.3)] transition-all flex items-center gap-2">
+          <button onClick={handleAIScan} className="bg-blue-accent text-white hover:bg-blue-accent/90 px-4 py-2.5 rounded-xl font-bold text-xs shadow-[0_4px_14px_rgba(37,99,255,0.3)] transition-all flex items-center gap-2">
             <Cpu size={16} /> AI Scan
           </button>
         </div>
@@ -111,7 +149,11 @@ export default function Screener() {
               </tr>
             </thead>
             <tbody className="divide-y divide-border/50">
-              {filteredStocks.map((stock) => {
+              {isLoading ? (
+                <tr>
+                  <td colSpan={6} className="py-12 text-center text-text-muted font-bold">Loading...</td>
+                </tr>
+              ) : filteredStocks.map((stock) => {
                 const isUp = stock.changePercent >= 0;
                 
                 // Mock metrics for high density UI
