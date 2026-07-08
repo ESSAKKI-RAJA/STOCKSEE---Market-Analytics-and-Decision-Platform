@@ -1,11 +1,11 @@
-import { SignUp } from "@clerk/clerk-react";
+import { SignIn } from "@clerk/clerk-react";
 
-export default function SignUpPage() {
+export default function SignInPage() {
   return (
     <div className="min-h-screen bg-bg-base flex items-center justify-center p-4">
       <div className="absolute inset-0 overflow-hidden pointer-events-none">
-        <div className="absolute top-[-20%] right-[-10%] w-[50%] h-[50%] bg-blue-accent/10 blur-[120px] rounded-full mix-blend-screen" />
-        <div className="absolute bottom-[-20%] left-[-10%] w-[50%] h-[50%] bg-purple-500/10 blur-[120px] rounded-full mix-blend-screen" />
+        <div className="absolute top-[-20%] left-[-10%] w-[50%] h-[50%] bg-blue-accent/10 blur-[120px] rounded-full mix-blend-screen" />
+        <div className="absolute bottom-[-20%] right-[-10%] w-[50%] h-[50%] bg-purple-500/10 blur-[120px] rounded-full mix-blend-screen" />
       </div>
       
       <div className="z-10 w-full max-w-md animate-fade-in">
@@ -13,14 +13,14 @@ export default function SignUpPage() {
           <div className="w-12 h-12 bg-blue-accent/20 rounded-xl flex items-center justify-center mb-4 border border-blue-accent/30 shadow-[0_0_15px_rgba(37,99,255,0.2)]">
             <span className="text-blue-accent font-bold text-xl">S</span>
           </div>
-          <h1 className="text-3xl font-heading font-bold text-text-primary tracking-tight">Create Account</h1>
-          <p className="text-text-muted mt-2">Join STOCKSEE's intelligence platform</p>
+          <h1 className="text-3xl font-heading font-bold text-text-primary tracking-tight">STOCKSEE</h1>
+          <p className="text-text-muted mt-2">Institutional-grade market intelligence</p>
         </div>
         
-        <SignUp
-          path="/signup"
+        <SignIn
+          path="/login"
           routing="path"
-          signInUrl="/login"
+          signUpUrl="/signup"
           appearance={{
             elements: {
               rootBox: "w-full",

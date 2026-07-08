@@ -1,8 +1,8 @@
-"""Add cache models
+"""init
 
-Revision ID: 3c09225a25bc
+Revision ID: d75fd313a675
 Revises: 
-Create Date: 2026-06-07 03:46:45.845640
+Create Date: 2026-07-08 10:46:18.103402
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = '3c09225a25bc'
+revision: str = 'd75fd313a675'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None

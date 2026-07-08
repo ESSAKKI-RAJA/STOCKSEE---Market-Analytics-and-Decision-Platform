@@ -5,6 +5,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "next-themes";
+import { ClerkProvider } from "@clerk/clerk-react";
 import Layout from "@/components/Layout";
 import Index from "./pages/Index";
 import Analyse from "./pages/Analyse";
@@ -14,8 +15,8 @@ import AIAdvisor from "./pages/AIAdvisor";
 import StockDetail from "./pages/StockDetail";
 import CryptoDetail from "./pages/CryptoDetail";
 import ETFDetail from "./pages/ETFDetail";
-import Login from "./pages/Login";
-import Signup from "./pages/Signup";
+import SignInPage from "./pages/SignIn";
+import SignUpPage from "./pages/SignUp";
 import Auth from "./pages/Auth";
 import AuthCallback from "./pages/AuthCallback";
 import Watchlist from "./pages/Watchlist";
@@ -29,11 +30,13 @@ import NotFound from "./pages/NotFound";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
 const queryClient = new QueryClient();
+const clerkPubKey = import.meta.env.VITE_CLERK_PUBLISHABLE_KEY;
 
 const App = () => (
   <QueryClientProvider client={queryClient}>
-    <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
-      <TooltipProvider>
+    <ClerkProvider publishableKey={clerkPubKey}>
+      <ThemeProvider attribute="class" defaultTheme="dark" enableSystem>
+        <TooltipProvider>
         <Toaster />
         <Sonner />
         <BrowserRouter>
@@ -59,16 +62,17 @@ const App = () => (
                   <Route path="/portfolio" element={<Portfolio />} />
                 </Route>
               </Route>
-              <Route path="/login" element={<Login />} />
-              <Route path="/signup" element={<Signup />} />
+              <Route path="/login" element={<SignInPage />} />
+              <Route path="/signup" element={<SignUpPage />} />
               <Route path="/auth" element={<Auth />} />
               <Route path="/auth/callback" element={<AuthCallback />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </AuthProvider>
         </BrowserRouter>
-      </TooltipProvider>
-    </ThemeProvider>
+        </TooltipProvider>
+      </ThemeProvider>
+    </ClerkProvider>
   </QueryClientProvider>
 );
 
