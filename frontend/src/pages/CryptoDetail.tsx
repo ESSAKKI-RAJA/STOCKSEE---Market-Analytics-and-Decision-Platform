@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
-import { cryptoData, generateChartData } from "@/data/stockData";
+import { cryptoData, generateChartData } from "@/services/mock/stockData";
 import { ArrowLeft, TrendingUp, TrendingDown, Activity } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer, BarChart, Bar } from "recharts";
 import { motion } from "framer-motion";

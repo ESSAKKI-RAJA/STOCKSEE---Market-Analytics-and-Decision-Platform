@@ -1,8 +1,8 @@
 import { useState, useEffect } from "react";
 import { Outlet, useLocation } from "react-router-dom";
-import Sidebar from "./Sidebar";
-import Topbar from "./Topbar";
-import StatusBadge from "./StatusBadge";
+import Sidebar from "@/components/Sidebar";
+import Topbar from "@/components/Topbar";
+import StatusBadge from "@/components/StatusBadge";
 
 export default function Layout() {
   const location = useLocation();

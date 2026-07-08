@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Map, TrendingUp, TrendingDown, X, BarChart3, Activity, Users, Info, Zap, Settings } from "lucide-react";
 import { motion } from "framer-motion";
-import { HEATMAP_DATA, HeatmapBlock } from "@/data/heatmaps";
+import { HEATMAP_DATA, HeatmapBlock } from "@/services/mock/heatmaps";
 
 const TABS = ["US Market", "India Market", "Crypto Market", "Sector Heatmap"];
 

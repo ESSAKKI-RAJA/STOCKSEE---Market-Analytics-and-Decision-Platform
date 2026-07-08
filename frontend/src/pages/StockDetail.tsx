@@ -1,6 +1,6 @@
 import { useState, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
-import { allStocks, generateChartData } from "@/data/stockData";
+import { allStocks, generateChartData } from "@/services/mock/stockData";
 import { ArrowLeft, Bot, Loader2, BarChart2, TrendingUp, Cpu, Info, Target, Users } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
 import ReactMarkdown from "react-markdown";

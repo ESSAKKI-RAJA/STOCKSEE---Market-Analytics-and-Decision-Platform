@@ -7,7 +7,7 @@ import {
 } from "lucide-react";
 import StockSeeLogo from "@/components/StockSeeLogo";
 import NotificationsBell from "@/components/NotificationsBell";
-import { allStocks } from "@/data/stockData";
+import { allStocks } from "@/services/mock/stockData";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "next-themes";
 

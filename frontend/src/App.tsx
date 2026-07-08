@@ -6,7 +6,7 @@ import { TooltipProvider } from "@/components/ui/tooltip";
 import { AuthProvider } from "@/contexts/AuthContext";
 import { ThemeProvider } from "next-themes";
 import { ClerkProvider } from "@clerk/clerk-react";
-import Layout from "@/components/Layout";
+import Layout from "@/layouts/Layout";
 import Index from "./pages/Index";
 import Analyse from "./pages/Analyse";
 import Alerts from "./pages/Alerts";
@@ -17,8 +17,6 @@ import CryptoDetail from "./pages/CryptoDetail";
 import ETFDetail from "./pages/ETFDetail";
 import SignInPage from "./pages/SignIn";
 import SignUpPage from "./pages/SignUp";
-import Auth from "./pages/Auth";
-import AuthCallback from "./pages/AuthCallback";
 import Watchlist from "./pages/Watchlist";
 import Portfolio from "./pages/Portfolio";
 import Heatmaps from "./pages/Heatmaps";
@@ -64,8 +62,6 @@ const App = () => (
               </Route>
               <Route path="/login" element={<SignInPage />} />
               <Route path="/signup" element={<SignUpPage />} />
-              <Route path="/auth" element={<Auth />} />
-              <Route path="/auth/callback" element={<AuthCallback />} />
               <Route path="*" element={<NotFound />} />
             </Routes>
           </AuthProvider>

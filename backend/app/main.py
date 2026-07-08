@@ -21,9 +21,7 @@ from app.services.signal_service import generate_signal
 from app.services.report_service import generate_report
 from app.services.watchlist_service import get_watchlist, add_to_watchlist, remove_from_watchlist
 from app.services.cache_service import get_cached_payload, set_cached_payload
-from app.api.user import router as user_router
-from app.api.market import router as market_router
-from app.db.session import engine
+from app.database.session import engine
 from app.models.base import Base
 from app.models.user import User  # Ensure User is registered with Base
 
@@ -43,8 +41,7 @@ app.add_middleware(
     allow_headers=["*"],
 )
 
-app.include_router(user_router, prefix="/api/user", tags=["user"])
-app.include_router(market_router, prefix="/api/market", tags=["market"])
+
 
 
 # ─── Utility ────────────────────────────────────────────────────

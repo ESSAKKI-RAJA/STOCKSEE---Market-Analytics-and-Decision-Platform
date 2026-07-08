@@ -1,6 +1,6 @@
 import { Link } from "react-router-dom";
 import { TrendingUp, TrendingDown } from "lucide-react";
-import { Stock } from "@/data/stockData";
+import { Stock } from "@/services/mock/stockData";
 import AnimatedMiniChart from "./MiniChart";
 import WatchlistButton from "./WatchlistButton";
 import { formatCurrency } from "@/lib/currency";

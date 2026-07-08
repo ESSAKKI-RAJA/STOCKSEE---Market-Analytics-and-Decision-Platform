@@ -5,9 +5,9 @@ import {
   Search, Bookmark, GraduationCap, ArrowUpRight, Check, BrainCircuit
 } from "lucide-react";
 
-import { ebooks } from "@/data/ebooks";
-import { platforms } from "@/data/learningPlatforms";
-import { channels } from "@/data/youtubeChannels";
+import { ebooks } from "@/services/mock/ebooks";
+import { platforms } from "@/services/mock/learningPlatforms";
+import { channels } from "@/services/mock/youtubeChannels";
 
 const TABS = [
   { id: "ebooks",    label: "Intelligence Briefs",       icon: BookOpen },

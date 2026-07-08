@@ -40,3 +40,4 @@ supabase/.env
 Thumbs.db
 .vscode/
 .idea/
+/generated/prisma

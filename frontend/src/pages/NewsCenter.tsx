@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 import { Newspaper, TrendingUp, TrendingDown, Minus, ExternalLink, RefreshCw, AlertCircle, BarChart3 } from "lucide-react";
-import { newsData as NEWS_DATA } from "@/data/newsData";
+import { newsData as NEWS_DATA } from "@/services/mock/newsData";
 
 export default function NewsCenter() {
   const [activeTab, setActiveTab] = useState<string>("Markets");

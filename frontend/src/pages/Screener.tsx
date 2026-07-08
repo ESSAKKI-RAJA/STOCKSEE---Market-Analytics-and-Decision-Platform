@@ -5,7 +5,7 @@ import { Search, Filter, ArrowUpDown, Download, Settings, Cpu, ChevronDown } fro
 import { formatCurrency } from "@/lib/currency";
 import { apiClient } from "@/lib/apiClient";
 import { useQuery } from "@tanstack/react-query";
-import { allStocks } from "@/data/stockData";
+import { allStocks } from "@/services/mock/stockData";
 
 export default function Screener() {
   const [search, setSearch] = useState("");

@@ -1,12 +1,12 @@
 import { useState } from "react";
 import { Zap, Plus, Trash2, ArrowLeft, Bell, Settings } from "lucide-react";
 import { Link } from "react-router-dom";
-import { allStocks } from "@/data/stockData";
+import { allStocks } from "@/services/mock/stockData";
 import { useAlerts, type AlertType } from "@/hooks/useAlerts";
 import { useAuth } from "@/contexts/AuthContext";
 import { formatCurrency } from "@/lib/currency";
 import { formatDistanceToNow } from "date-fns";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabase/client";
 import { toast } from "sonner";
 
 const ALERT_TYPE_META: Record<AlertType, { label: string; color: string }> = {

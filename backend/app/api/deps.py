@@ -1,7 +1,7 @@
 from fastapi import Depends, HTTPException, status, Request
 from sqlalchemy.orm import Session
 from app.core.config import settings
-from app.db.session import get_db
+from app.database.session import get_db
 from app.models.user import User, UserPreference
 import requests
 import jwt

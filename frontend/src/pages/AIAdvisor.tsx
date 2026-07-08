@@ -1,6 +1,6 @@
 import { useState, useRef, useEffect } from "react";
 import ReactMarkdown from "react-markdown";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabase/client";
 import { Sparkles, Send, Bot, User, Zap, Activity, TrendingUp, BarChart2 } from "lucide-react";
 
 interface Message {

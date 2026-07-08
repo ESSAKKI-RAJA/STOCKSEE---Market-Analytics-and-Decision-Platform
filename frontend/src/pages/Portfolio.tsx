@@ -1,11 +1,11 @@
 import { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
 import { ArrowLeft, Briefcase, Plus, Trash2, PieChart, TrendingUp, TrendingDown, DollarSign, Target, AlertTriangle, Lightbulb, Activity, ChevronRight } from "lucide-react";
-import { supabase } from "@/integrations/supabase/client";
+import { supabase } from "@/lib/supabase/client";
 import { useAuth } from "@/contexts/AuthContext";
 import { useStockPrices } from "@/hooks/useStockPrices";
 import { formatCurrency } from "@/lib/currency";
-import { allStocks } from "@/data/stockData";
+import { allStocks } from "@/services/mock/stockData";
 import { toast } from "sonner";
 import { ResponsiveContainer, PieChart as RechartsPieChart, Pie, Cell, Tooltip } from "recharts";
 

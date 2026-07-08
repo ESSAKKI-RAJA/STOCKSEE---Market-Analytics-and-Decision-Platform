@@ -4,7 +4,7 @@ import {
   Star, Briefcase, Settings, BarChart3, X, Sun, Moon,
 } from "lucide-react";
 import { Link, useNavigate } from "react-router-dom";
-import { allStocks, marketIndices } from "@/data/stockData";
+import { allStocks, marketIndices } from "@/services/mock/stockData";
 import { useAuth } from "@/contexts/AuthContext";
 import { useTheme } from "next-themes";
 import NotificationsBell from "./NotificationsBell";

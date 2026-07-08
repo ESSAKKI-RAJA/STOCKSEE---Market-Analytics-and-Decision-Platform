@@ -1,6 +1,6 @@
 import { useState, useEffect, useCallback, useRef } from "react";
 import { apiClient } from "@/lib/apiClient";
-import { allStocks, type Stock } from "@/data/stockData";
+import { allStocks, type Stock } from "@/services/mock/stockData";
 
 export interface StockPrice {
   symbol: string;

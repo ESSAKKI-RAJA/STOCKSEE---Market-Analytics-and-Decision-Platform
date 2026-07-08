@@ -4,7 +4,7 @@ from typing import Dict, Any, Optional
 from sqlalchemy.orm import Session
 from sqlalchemy import delete
 
-from app.db.session import SessionLocal
+from app.database.session import SessionLocal
 from app.models.cache_models import (
     MarketDataCache,
     NewsArticle,

@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { marketIndices as initialIndices } from "@/data/stockData";
+import { marketIndices as initialIndices } from "@/services/mock/stockData";
 
 export default function TickerBar() {
   const [items, setItems] = useState([...initialIndices, ...initialIndices]);

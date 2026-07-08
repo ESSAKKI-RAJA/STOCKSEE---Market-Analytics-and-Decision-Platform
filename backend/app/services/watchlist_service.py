@@ -3,7 +3,7 @@ from sqlalchemy.exc import IntegrityError
 from datetime import datetime, timezone
 import logging
 
-from app.db.session import SessionLocal
+from app.database.session import SessionLocal
 from app.models.cache_models import UserWatchlist
 from app.core.config import settings
 
