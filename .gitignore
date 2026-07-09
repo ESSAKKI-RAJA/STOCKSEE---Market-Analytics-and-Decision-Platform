@@ -1,0 +1,45 @@
+# ======================
+# ENV (NEVER COMMIT)
+# ======================
+.env
+**/.env
+
+# ======================
+# PYTHON BACKEND
+# ======================
+__pycache__/
+*.py[cod]
+backend/.venv/
+.venv/
+venv/
+
+# ======================
+# NODE / FRONTEND
+# ======================
+frontend/node_modules/
+node_modules/
+frontend/dist/
+dist/
+
+# ======================
+# BUILD / CACHE
+# ======================
+build/
+.cache/
+*.log
+
+# ======================
+# SUPABASE (optional)
+# ======================
+supabase/.env
+
+# ======================
+# OS / EDITOR
+# ======================
+.DS_Store
+Thumbs.db
+.vscode/
+.idea/
+.claude/
+backend/stocksee_dev.db
+*.db

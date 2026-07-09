@@ -1,0 +1,269 @@
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  :root {
+    /* 
+      STOCKSEE V4 Design Language 
+      Minimal, Professional, Institutional, Premium
+    */
+    --bg-primary: #000000;
+    --bg-secondary: #0A0A0A;
+    --card-surface: #121212;
+    --border-color: #27272A;
+    
+    --text-primary: #FAFAFA;
+    --text-secondary: #A1A1AA;
+    --text-muted: #71717A;
+    
+    /* Institutional Accent Colors */
+    --blue-accent: #2563EB;
+    --blue-hover: #3B82F6;
+    --blue-muted: rgba(37, 99, 235, 0.15);
+    
+    --purple-accent: #7C3AED;
+    --green-gain: #10B981;
+    --green-muted: rgba(16, 185, 129, 0.15);
+    --red-loss: #EF4444;
+    --red-muted: rgba(239, 68, 68, 0.15);
+    --gold-premium: #F59E0B;
+
+    /* Shadcn mapping */
+    --background: 0 0% 0%; /* #000000 */
+    --foreground: 0 0% 98%; /* #FAFAFA */
+    
+    --card: 0 0% 7%; /* #121212 */
+    --card-foreground: 0 0% 98%;
+    
+    --popover: 0 0% 7%;
+    --popover-foreground: 0 0% 98%;
+    
+    --primary: 221 83% 53%; /* #2563EB */
+    --primary-foreground: 0 0% 98%;
+    
+    --secondary: 0 0% 4%; /* #0A0A0A */
+    --secondary-foreground: 0 0% 98%;
+    
+    --muted: 0 0% 4%;
+    --muted-foreground: 240 5% 65%; /* #A1A1AA */
+    
+    --accent: 262 83% 58%; /* #7C3AED */
+    --accent-foreground: 0 0% 98%;
+    
+    --destructive: 0 84% 60%; /* #EF4444 */
+    --destructive-foreground: 0 0% 98%;
+    
+    --border: 240 6% 16%; /* #27272A */
+    --input: 240 6% 16%;
+    --ring: 221 83% 53%;
+    
+    --radius: 0.5rem; /* 8px sharper corners for institutional feel */
+  }
+
+  .dark {
+    /* Hardcode dark mode mappings */
+    --background: 0 0% 0%;
+    --foreground: 0 0% 98%;
+    --card: 0 0% 7%;
+    --card-foreground: 0 0% 98%;
+    --popover: 0 0% 7%;
+    --popover-foreground: 0 0% 98%;
+    --primary: 221 83% 53%;
+    --primary-foreground: 0 0% 98%;
+    --secondary: 0 0% 4%;
+    --secondary-foreground: 0 0% 98%;
+    --muted: 0 0% 4%;
+    --muted-foreground: 240 5% 65%;
+    --accent: 262 83% 58%;
+    --accent-foreground: 0 0% 98%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 98%;
+    --border: 240 6% 16%;
+    --input: 240 6% 16%;
+    --ring: 221 83% 53%;
+  }
+
+  * { @apply border-border box-border; }
+
+  html { scroll-behavior: smooth; }
+
+  body {
+    font-family: 'Inter', system-ui, -apple-system, sans-serif;
+    font-feature-settings: "cv02", "cv03", "cv04", "cv11", "tnum"; /* Enhanced readability */
+    background-color: var(--bg-primary);
+    color: var(--text-primary);
+    min-height: 100vh;
+    overflow-x: hidden;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+  }
+
+  ::-webkit-scrollbar { width: 4px; height: 4px; }
+  ::-webkit-scrollbar-track { background: transparent; }
+  ::-webkit-scrollbar-thumb { background: var(--border-color); border-radius: 4px; }
+  ::-webkit-scrollbar-thumb:hover { background: var(--text-muted); }
+
+  .font-mono, .mono {
+    font-family: 'JetBrains Mono', 'Courier New', monospace;
+    font-feature-settings: "tnum";
+  }
+}
+
+@keyframes live-flash-green {
+  0% { background-color: var(--green-muted); color: var(--green-gain); }
+  100% { background-color: transparent; color: inherit; }
+}
+@keyframes live-flash-red {
+  0% { background-color: var(--red-muted); color: var(--red-loss); }
+  100% { background-color: transparent; color: inherit; }
+}
+
+.flash-green { animation: live-flash-green 1s ease-out; }
+.flash-red { animation: live-flash-red 1s ease-out; }
+
+@layer components {
+  /* Legacy compat wrapped in V4 aesthetics */
+  .t-panel, .card-pro, .card-float, .glass-panel {
+    background: var(--card-surface);
+    border: 1px solid var(--border-color);
+    border-radius: var(--radius);
+    transition: border-color 0.2s ease;
+  }
+  
+  .t-panel:hover, .card-pro:hover {
+    border-color: rgba(255, 255, 255, 0.15);
+  }
+
+  .t-header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 12px 16px;
+    border-bottom: 1px solid var(--border-color);
+  }
+
+  .t-label {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+  }
+
+  /* Core UI elements */
+  .stocksee-card {
+    @apply bg-[#121212] border border-[#27272A] rounded-lg p-5;
+  }
+  .stocksee-card-header {
+    @apply text-xs font-semibold uppercase tracking-wider text-[#A1A1AA] mb-4;
+  }
+  .stocksee-data-row {
+    @apply flex justify-between items-center py-2 border-b border-[#27272A]/50 last:border-0;
+  }
+  .stocksee-data-label {
+    @apply text-sm text-[#A1A1AA];
+  }
+  .stocksee-data-value {
+    @apply text-sm font-medium font-mono text-[#FAFAFA];
+  }
+
+  .t-table {
+    width: 100%;
+    border-collapse: separate;
+    border-spacing: 0;
+    font-size: 13px;
+  }
+
+  .t-table thead th {
+    font-size: 11px;
+    font-weight: 500;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+    color: var(--text-muted);
+    padding: 12px 16px;
+    text-align: right;
+    border-bottom: 1px solid var(--border-color);
+    white-space: nowrap;
+  }
+  .t-table thead th:first-child { text-align: left; }
+
+  .t-table tbody tr { transition: all 0.2s; cursor: pointer; }
+  .t-table tbody tr:hover { background: rgba(255, 255, 255, 0.03); }
+
+  .t-table tbody td {
+    padding: 12px 16px;
+    font-family: 'JetBrains Mono', monospace;
+    font-size: 13px;
+    text-align: right;
+    color: var(--text-primary);
+    white-space: nowrap;
+    border-bottom: 1px solid var(--border-color);
+  }
+  .t-table tbody tr:last-child td { border-bottom: none; }
+  .t-table tbody td:first-child {
+    text-align: left;
+    font-family: 'Inter', sans-serif;
+    font-weight: 500;
+    font-size: 14px;
+  }
+
+  .t-input, .input-pro {
+    background: var(--bg-secondary);
+    border: 1px solid var(--border-color);
+    border-radius: 6px;
+    color: var(--text-primary);
+    font-size: 14px;
+    padding: 8px 12px;
+    outline: none;
+    transition: all 0.2s;
+    width: 100%;
+  }
+  .t-input:focus, .input-pro:focus { 
+    border-color: var(--blue-accent);
+  }
+
+  .t-badge {
+    font-size: 11px;
+    font-weight: 500;
+    padding: 2px 8px;
+    border-radius: 4px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .t-up { color: var(--green-gain); }
+  .t-down { color: var(--red-loss); }
+  .t-flat { color: var(--text-muted); }
+
+  .bg-up { background: var(--green-muted); color: var(--green-gain); }
+  .bg-down { background: var(--red-muted); color: var(--red-loss); }
+
+  .btn-primary, .t-btn-primary {
+    @apply bg-blue-600 hover:bg-blue-700 text-white border-0 font-medium px-4 py-2 rounded-md transition-colors text-sm;
+  }
+  .btn-secondary, .t-btn {
+    @apply bg-[#121212] hover:bg-[#1A1A1D] border border-[#27272A] text-white font-medium px-4 py-2 rounded-md transition-colors text-sm;
+  }
+  
+  .section-heading { font-weight: 500; font-size: 1.25rem; color: var(--text-primary); }
+}
+
+@layer utilities {
+  .scrollbar-hide {
+    -ms-overflow-style: none;
+    scrollbar-width: none;
+  }
+  .scrollbar-hide::-webkit-scrollbar { display: none; }
+  .tnum { font-feature-settings: "tnum"; }
+  
+  .glass-effect {
+    background: rgba(10, 10, 10, 0.7);
+    backdrop-filter: blur(16px);
+    -webkit-backdrop-filter: blur(16px);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+  }
+}
