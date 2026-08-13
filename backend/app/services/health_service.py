@@ -35,13 +35,13 @@ def get_health_status() -> Dict[str, Any]:
             "mode": "heuristic",
         },
         "database": {
-            "engine": "sqlite" if "sqlite" in settings.DATABASE_URL else ("postgres" if "postgres" in settings.DATABASE_URL else "in_memory"),
+            "engine": "postgres" if "postgres" in settings.DATABASE_URL else "none",
             "status": "active" if bool(settings.DATABASE_URL) else "demo",
             "mode": "real" if bool(settings.DATABASE_URL) else "demo",
             "note": "" if bool(settings.DATABASE_URL) else "No database connected",
         },
         "cache": {
-            "engine": "sqlite" if "sqlite" in settings.DATABASE_URL else ("postgres" if "postgres" in settings.DATABASE_URL else "none"),
+            "engine": "postgres" if "postgres" in settings.DATABASE_URL else "none",
             "status": "active" if bool(settings.DATABASE_URL) else "disabled",
             "mode": "real" if bool(settings.DATABASE_URL) else "demo",
         },
