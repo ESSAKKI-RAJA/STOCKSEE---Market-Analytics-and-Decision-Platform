@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime, timezone
-from sqlalchemy import String, Boolean, ForeignKey, DateTime
+from sqlalchemy import String, Boolean, ForeignKey, DateTime, Column, Integer, Float
 from sqlalchemy.orm import Mapped, mapped_column, relationship
 from app.models.base import Base
 
@@ -29,3 +29,14 @@ class UserPreference(Base):
     risk_tolerance: Mapped[str] = mapped_column(String(50), default="moderate")
 
     user: Mapped["User"] = relationship("User", back_populates="preferences")
+
+class UserPortfolio(Base):
+    __tablename__ = "user_portfolio"
+
+    id = Column(String(255), primary_key=True, default=lambda: str(uuid.uuid4()))
+    user_id = Column(String(255), ForeignKey("users.id", ondelete="CASCADE"), nullable=False, index=True)
+    symbol = Column(String(50), nullable=False, index=True)
+    quantity = Column(Integer, default=0)
+    average_price = Column(Float, nullable=True)
+    created_at = Column(DateTime(timezone=True), default=utcnow)
+    updated_at = Column(DateTime(timezone=True), default=utcnow, onupdate=utcnow)

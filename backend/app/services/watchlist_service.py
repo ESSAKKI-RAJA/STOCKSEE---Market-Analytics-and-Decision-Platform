@@ -15,11 +15,11 @@ _DEMO_WATCHLIST = ["AAPL", "TSLA", "MSFT"]
 def is_db_available():
     return bool(settings.DATABASE_URL)
 
-def get_watchlist() -> Dict[str, Any]:
+def get_watchlist(user_id: str) -> Dict[str, Any]:
     if is_db_available():
         try:
             with SessionLocal() as db:
-                records = db.query(UserWatchlist).order_by(UserWatchlist.created_at).all()
+                records = db.query(UserWatchlist).filter(UserWatchlist.user_id == user_id).order_by(UserWatchlist.created_at).all()
                 symbols = [r.symbol for r in records]
                 return {
                     "symbols": symbols,
@@ -42,7 +42,7 @@ def get_watchlist() -> Dict[str, Any]:
         }
     }
 
-def add_to_watchlist(symbol: str) -> Dict[str, Any]:
+def add_to_watchlist(symbol: str, user_id: str) -> Dict[str, Any]:
     sym = symbol.upper().strip()
     if not sym:
         raise ValueError("Invalid symbol")
@@ -50,9 +50,12 @@ def add_to_watchlist(symbol: str) -> Dict[str, Any]:
     if is_db_available():
         try:
             with SessionLocal() as db:
-                existing = db.query(UserWatchlist).filter(UserWatchlist.symbol == sym).first()
+                existing = db.query(UserWatchlist).filter(
+                    UserWatchlist.symbol == sym,
+                    UserWatchlist.user_id == user_id
+                ).first()
                 if not existing:
-                    record = UserWatchlist(symbol=sym)
+                    record = UserWatchlist(symbol=sym, user_id=user_id)
                     db.add(record)
                     db.commit()
                 return {
@@ -70,13 +73,16 @@ def add_to_watchlist(symbol: str) -> Dict[str, Any]:
         "_meta": {"mode": "demo", "source": "in_memory"}
     }
 
-def remove_from_watchlist(symbol: str) -> Dict[str, Any]:
+def remove_from_watchlist(symbol: str, user_id: str) -> Dict[str, Any]:
     sym = symbol.upper().strip()
     
     if is_db_available():
         try:
             with SessionLocal() as db:
-                db.query(UserWatchlist).filter(UserWatchlist.symbol == sym).delete()
+                db.query(UserWatchlist).filter(
+                    UserWatchlist.symbol == sym,
+                    UserWatchlist.user_id == user_id
+                ).delete()
                 db.commit()
                 return {
                     "symbols": [sym],

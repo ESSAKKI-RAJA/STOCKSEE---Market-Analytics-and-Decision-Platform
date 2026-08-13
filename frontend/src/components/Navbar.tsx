@@ -16,7 +16,6 @@ const NAV_ITEMS = [
   { path: "/analyse", label: "Analyse",    icon: BarChart3  },
   { path: "/alerts",  label: "Alerts",     icon: Zap        },
   { path: "/academy", label: "Learn",      icon: BookOpen   },
-  { path: "/advisor", label: "AI Advisor", icon: Bot        },
 ];
 
 export default function Navbar() {

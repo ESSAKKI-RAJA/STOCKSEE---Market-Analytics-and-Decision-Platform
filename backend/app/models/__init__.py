@@ -8,6 +8,8 @@ from app.models.cache_models import (
     ApiHealthLog,
     UserWatchlist,
 )
+from app.models.user import User, UserPreference, UserPortfolio
+from app.models.stock import CompanyProfile, OHLCVCache, TechnicalIndicator
 
 __all__ = [
     "Base",
@@ -18,4 +20,10 @@ __all__ = [
     "SourceLog",
     "ApiHealthLog",
     "UserWatchlist",
+    "User",
+    "UserPreference",
+    "UserPortfolio",
+    "CompanyProfile",
+    "OHLCVCache",
+    "TechnicalIndicator",
 ]

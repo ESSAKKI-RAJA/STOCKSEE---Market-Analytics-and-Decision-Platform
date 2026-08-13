@@ -5,7 +5,7 @@ so the frontend can display honest transparency badges.
 """
 
 import logging
-from fastapi import FastAPI
+from fastapi import FastAPI, Depends
 from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 
@@ -27,9 +27,10 @@ from app.api.system import router as system_router
 from app.db.session import engine
 from app.models.base import Base
 from app.models.user import User  # Ensure User is registered with Base
+from app.api.deps import get_current_user
+from fastapi import Depends
 
-# Initialize database tables
-Base.metadata.create_all(bind=engine)
+# Database tables are managed exclusively by Alembic migrations
 
 logging.basicConfig(level=getattr(logging, settings.LOG_LEVEL.upper(), logging.INFO))
 logger = logging.getLogger(__name__)
@@ -269,6 +270,42 @@ def report(symbol: str):
     )
 
 
+@app.post("/api/report/batch")
+def report_batch(req: SymbolsRequest):
+    results = {}
+    any_real = False
+    
+    for symbol in req.symbols:
+        cached = get_cached_payload(symbol, "report")
+        if cached:
+            cached["_meta"]["cache_hit"] = True
+            data = cached
+        else:
+            q = get_market_quote(symbol)
+            h = get_market_history(symbol)
+            i = calculate_indicators(symbol, h)
+            n = get_news(symbol)
+            s = analyze_sentiment(symbol, n)
+            p = generate_prediction(symbol, h, i)
+            sig = generate_signal(i, s, p)
+            data = generate_report(symbol, q, i, s, p, sig)
+            
+        m, _, _ = _meta(data)
+        if m == "real":
+            any_real = True
+            
+        results[symbol] = data
+
+    return FallbackResponse(
+        status="ok",
+        mode="real" if any_real else "demo",
+        source="report_engine_batch",
+        message=f"Batch report for {len(req.symbols)} symbols",
+        data=results,
+        limitations="AI-generated analysis for educational purposes only. Not financial advice.",
+    )
+
+
 # ─── Heatmap ─────────────────────────────────────────────────────
 
 @app.get("/api/heatmap")
@@ -291,8 +328,8 @@ def heatmap():
 # ─── Watchlist ───────────────────────────────────────────────────
 
 @app.get("/api/watchlist")
-def get_watchlist_api():
-    data = get_watchlist()
+def get_watchlist_api(current_user: User = Depends(get_current_user)):
+    data = get_watchlist(current_user.id)
     mode, source, _ = _meta(data, "demo", "in_memory")
     return FallbackResponse(
         status="ok",
@@ -309,8 +346,8 @@ class WatchlistRequest(BaseModel):
 
 
 @app.post("/api/watchlist")
-def post_watchlist(req: WatchlistRequest):
-    data = add_to_watchlist(req.symbol)
+def post_watchlist(req: WatchlistRequest, current_user: User = Depends(get_current_user)):
+    data = add_to_watchlist(req.symbol, current_user.id)
     mode, source, _ = _meta(data, "demo", "in_memory")
     return FallbackResponse(
         status="ok",
@@ -322,8 +359,8 @@ def post_watchlist(req: WatchlistRequest):
 
 
 @app.delete("/api/watchlist/{symbol}")
-def del_watchlist(symbol: str):
-    data = remove_from_watchlist(symbol)
+def del_watchlist(symbol: str, current_user: User = Depends(get_current_user)):
+    data = remove_from_watchlist(symbol, current_user.id)
     mode, source, _ = _meta(data, "demo", "in_memory")
     return FallbackResponse(
         status="ok",

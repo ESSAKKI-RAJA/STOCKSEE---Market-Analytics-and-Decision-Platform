@@ -1,8 +1,8 @@
-"""init
+"""initial_postgresql
 
-Revision ID: d75fd313a675
+Revision ID: 4d4ef5126417
 Revises: 
-Create Date: 2026-07-08 10:46:18.103402
+Create Date: 2026-08-13 11:05:49.216421
 
 """
 from typing import Sequence, Union
@@ -12,7 +12,7 @@ import sqlalchemy as sa
 
 
 # revision identifiers, used by Alembic.
-revision: str = 'd75fd313a675'
+revision: str = '4d4ef5126417'
 down_revision: Union[str, None] = None
 branch_labels: Union[str, Sequence[str], None] = None
 depends_on: Union[str, Sequence[str], None] = None
@@ -43,6 +43,19 @@ def upgrade() -> None:
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index(op.f('ix_api_health_logs_created_at'), 'api_health_logs', ['created_at'], unique=False)
+    op.create_table('company_profiles',
+    sa.Column('symbol', sa.String(length=50), nullable=False),
+    sa.Column('company_name', sa.String(length=255), nullable=True),
+    sa.Column('exchange', sa.String(length=100), nullable=True),
+    sa.Column('currency', sa.String(length=10), nullable=True),
+    sa.Column('sector', sa.String(length=100), nullable=True),
+    sa.Column('industry', sa.String(length=100), nullable=True),
+    sa.Column('website', sa.String(length=255), nullable=True),
+    sa.Column('market_cap', sa.Integer(), nullable=True),
+    sa.Column('source', sa.String(length=100), nullable=True),
+    sa.Column('last_updated', sa.DateTime(timezone=True), nullable=True),
+    sa.PrimaryKeyConstraint('symbol')
+    )
     op.create_table('market_data_cache',
     sa.Column('id', sa.String(), nullable=False),
     sa.Column('symbol', sa.String(), nullable=False),
@@ -73,6 +86,21 @@ def upgrade() -> None:
     )
     op.create_index(op.f('ix_news_articles_created_at'), 'news_articles', ['created_at'], unique=False)
     op.create_index(op.f('ix_news_articles_symbol'), 'news_articles', ['symbol'], unique=False)
+    op.create_table('ohlcv_cache',
+    sa.Column('id', sa.String(length=36), nullable=False),
+    sa.Column('symbol', sa.String(length=50), nullable=False),
+    sa.Column('timeframe', sa.String(length=20), nullable=False),
+    sa.Column('date', sa.Date(), nullable=False),
+    sa.Column('open', sa.Float(), nullable=True),
+    sa.Column('high', sa.Float(), nullable=True),
+    sa.Column('low', sa.Float(), nullable=True),
+    sa.Column('close', sa.Float(), nullable=True),
+    sa.Column('volume', sa.Integer(), nullable=True),
+    sa.Column('source', sa.String(length=100), nullable=True),
+    sa.Column('last_updated', sa.DateTime(timezone=True), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_ohlcv_cache_symbol'), 'ohlcv_cache', ['symbol'], unique=False)
     op.create_table('sentiment_scores',
     sa.Column('id', sa.String(), nullable=False),
     sa.Column('symbol', sa.String(), nullable=False),
@@ -102,12 +130,61 @@ def upgrade() -> None:
     )
     op.create_index(op.f('ix_source_logs_created_at'), 'source_logs', ['created_at'], unique=False)
     op.create_index(op.f('ix_source_logs_symbol'), 'source_logs', ['symbol'], unique=False)
+    op.create_table('technical_indicators',
+    sa.Column('id', sa.String(length=36), nullable=False),
+    sa.Column('symbol', sa.String(length=50), nullable=False),
+    sa.Column('timeframe', sa.String(length=20), nullable=False),
+    sa.Column('sma20', sa.Float(), nullable=True),
+    sa.Column('sma50', sa.Float(), nullable=True),
+    sa.Column('sma200', sa.Float(), nullable=True),
+    sa.Column('rsi14', sa.Float(), nullable=True),
+    sa.Column('macd', sa.Float(), nullable=True),
+    sa.Column('macd_signal', sa.Float(), nullable=True),
+    sa.Column('trend', sa.String(length=50), nullable=True),
+    sa.Column('last_updated', sa.DateTime(timezone=True), nullable=True),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_technical_indicators_symbol'), 'technical_indicators', ['symbol'], unique=False)
+    op.create_table('users',
+    sa.Column('id', sa.String(length=255), nullable=False),
+    sa.Column('full_name', sa.String(length=255), nullable=True),
+    sa.Column('email', sa.String(length=255), nullable=False),
+    sa.Column('created_at', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('updated_at', sa.DateTime(timezone=True), nullable=False),
+    sa.Column('is_active', sa.Boolean(), nullable=False),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_users_email'), 'users', ['email'], unique=True)
+    op.create_table('user_portfolio',
+    sa.Column('id', sa.String(length=255), nullable=False),
+    sa.Column('user_id', sa.String(length=255), nullable=False),
+    sa.Column('symbol', sa.String(length=50), nullable=False),
+    sa.Column('quantity', sa.Integer(), nullable=True),
+    sa.Column('average_price', sa.Float(), nullable=True),
+    sa.Column('created_at', sa.DateTime(timezone=True), nullable=True),
+    sa.Column('updated_at', sa.DateTime(timezone=True), nullable=True),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
+    sa.PrimaryKeyConstraint('id')
+    )
+    op.create_index(op.f('ix_user_portfolio_symbol'), 'user_portfolio', ['symbol'], unique=False)
+    op.create_index(op.f('ix_user_portfolio_user_id'), 'user_portfolio', ['user_id'], unique=False)
+    op.create_table('user_preferences',
+    sa.Column('id', sa.String(length=255), nullable=False),
+    sa.Column('user_id', sa.String(length=255), nullable=False),
+    sa.Column('theme', sa.String(length=50), nullable=False),
+    sa.Column('default_view', sa.String(length=50), nullable=False),
+    sa.Column('risk_tolerance', sa.String(length=50), nullable=False),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
+    sa.PrimaryKeyConstraint('id'),
+    sa.UniqueConstraint('user_id')
+    )
     op.create_table('user_watchlists',
     sa.Column('id', sa.String(), nullable=False),
-    sa.Column('user_id', sa.String(), nullable=True),
+    sa.Column('user_id', sa.String(length=255), nullable=True),
     sa.Column('symbol', sa.String(), nullable=False),
     sa.Column('company_name', sa.String(), nullable=True),
     sa.Column('created_at', sa.DateTime(timezone=True), nullable=True),
+    sa.ForeignKeyConstraint(['user_id'], ['users.id'], ondelete='CASCADE'),
     sa.PrimaryKeyConstraint('id')
     )
     op.create_index('ix_user_watchlist_user_symbol', 'user_watchlists', ['user_id', 'symbol'], unique=True)
@@ -122,12 +199,22 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_user_watchlists_created_at'), table_name='user_watchlists')
     op.drop_index('ix_user_watchlist_user_symbol', table_name='user_watchlists')
     op.drop_table('user_watchlists')
+    op.drop_table('user_preferences')
+    op.drop_index(op.f('ix_user_portfolio_user_id'), table_name='user_portfolio')
+    op.drop_index(op.f('ix_user_portfolio_symbol'), table_name='user_portfolio')
+    op.drop_table('user_portfolio')
+    op.drop_index(op.f('ix_users_email'), table_name='users')
+    op.drop_table('users')
+    op.drop_index(op.f('ix_technical_indicators_symbol'), table_name='technical_indicators')
+    op.drop_table('technical_indicators')
     op.drop_index(op.f('ix_source_logs_symbol'), table_name='source_logs')
     op.drop_index(op.f('ix_source_logs_created_at'), table_name='source_logs')
     op.drop_table('source_logs')
     op.drop_index(op.f('ix_sentiment_scores_symbol'), table_name='sentiment_scores')
     op.drop_index(op.f('ix_sentiment_scores_created_at'), table_name='sentiment_scores')
     op.drop_table('sentiment_scores')
+    op.drop_index(op.f('ix_ohlcv_cache_symbol'), table_name='ohlcv_cache')
+    op.drop_table('ohlcv_cache')
     op.drop_index(op.f('ix_news_articles_symbol'), table_name='news_articles')
     op.drop_index(op.f('ix_news_articles_created_at'), table_name='news_articles')
     op.drop_table('news_articles')
@@ -135,6 +222,7 @@ def downgrade() -> None:
     op.drop_index(op.f('ix_market_data_cache_endpoint_type'), table_name='market_data_cache')
     op.drop_index(op.f('ix_market_data_cache_created_at'), table_name='market_data_cache')
     op.drop_table('market_data_cache')
+    op.drop_table('company_profiles')
     op.drop_index(op.f('ix_api_health_logs_created_at'), table_name='api_health_logs')
     op.drop_table('api_health_logs')
     op.drop_index(op.f('ix_ai_reports_symbol'), table_name='ai_reports')

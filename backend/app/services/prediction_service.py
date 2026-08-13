@@ -2,6 +2,7 @@
 
 Uses SMA crossover + momentum heuristic for simple directional bias.
 No ML models (LSTM, Prophet, etc.) are loaded — this is stated clearly.
+Replaces false-precision price targeting with Scenario Projection.
 """
 
 from typing import Dict, Any, List
@@ -9,10 +10,10 @@ from datetime import datetime, timezone
 
 
 def generate_prediction(symbol: str, history_data: Dict[str, Any], indicators: Dict[str, Any]) -> Dict[str, Any]:
-    """Generate a conservative trend projection.
+    """Generate a conservative Scenario Projection.
 
-    This is NOT a price target — it's a directional bias based on
-    simple technical indicators.
+    This replaces the legacy ±2% numerical target, producing textual
+    scenarios mapped to current technical momentum constraints.
     """
     rows = history_data.get("rows", [])
     history_meta = history_data.get("_meta", {})
@@ -22,28 +23,30 @@ def generate_prediction(symbol: str, history_data: Dict[str, Any], indicators: D
         return _empty_prediction()
 
     trend = indicators.get("trend", "Neutral")
-    current_price = float(rows[-1]["close"])
-
-    projected_price = current_price
+    
+    # We no longer calculate a static price. We provide a descriptive scenario.
+    projected_price = 0.0 
     direction = "Sideways"
     confidence = "Low"
+    scenario = "Market is currently directionless or conflicting. Wait for a clear trend."
 
     if trend == "Bullish":
-        projected_price = current_price * 1.02  # Conservative 2% up
         direction = "Up"
         confidence = "Low-Medium"
+        scenario = "Current technical evidence suggests continued upward momentum, provided support holds at the 20-day SMA."
     elif trend == "Bearish":
-        projected_price = current_price * 0.98  # Conservative 2% down
         direction = "Down"
         confidence = "Low-Medium"
+        scenario = "Current technical evidence suggests downward pressure; risk of further decline remains elevated."
 
     return {
-        "projected_price": round(projected_price, 2),
+        "projected_price": round(projected_price, 2), # Retained as 0.0 for API contract backward compatibility
         "prediction_direction": direction,
+        "scenario_projection": scenario,
         "confidence": confidence,
-        "model_used": "Simple_Trend_Projection",
+        "model_used": "Deterministic_Scenario_Projection",
         "data_points_used": len(rows),
-        "limitations": "Conservative trend projection using SMA + momentum heuristic. No ML model loaded.",
+        "limitations": "Conservative trend projection. No ML model loaded. No price target provided.",
         "_meta": {
             "mode": data_mode,
             "source": "trend_projection",
@@ -56,6 +59,7 @@ def _empty_prediction() -> Dict[str, Any]:
     return {
         "projected_price": 0.0,
         "prediction_direction": "Unknown",
+        "scenario_projection": "Insufficient data to establish a market scenario.",
         "confidence": "None",
         "model_used": "None",
         "data_points_used": 0,

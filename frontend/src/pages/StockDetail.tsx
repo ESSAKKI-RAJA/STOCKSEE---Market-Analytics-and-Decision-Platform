@@ -1,20 +1,17 @@
 import { useState, useMemo } from "react";
 import { useParams, Link } from "react-router-dom";
 import { allStocks, generateChartData } from "@/data/stockData";
-import { ArrowLeft, Bot, Loader2, BarChart2, TrendingUp, Cpu, Info, Target, Users } from "lucide-react";
+import { ArrowLeft, BarChart2, TrendingUp, Info } from "lucide-react";
 import { AreaChart, Area, XAxis, YAxis, Tooltip, ResponsiveContainer } from "recharts";
-import ReactMarkdown from "react-markdown";
-import AIInsightCard from "@/components/AIInsightCard";
 import CompanyProfileSection from "@/components/CompanyProfileSection";
 import WatchlistButton from "@/components/WatchlistButton";
 import { useStockPrices } from "@/hooks/useStockPrices";
 import { formatCurrency } from "@/lib/currency";
-import { apiClient } from "@/lib/apiClient";
-import CoreQuestionsOverview from "@/components/CoreQuestionsOverview";
+import DecisionSnapshot from "@/components/DecisionSnapshot";
 
 const timeframes = ["1D", "1W", "1M", "3M", "1Y", "5Y", "MAX"] as const;
 const tfDays: Record<string, number> = { "1D": 1, "1W": 7, "1M": 30, "3M": 90, "1Y": 365, "5Y": 1825, "MAX": 3650 };
-const tabs = ["Overview", "Chart", "Financials", "News", "Analyst", "Quant", "Peers"];
+const tabs = ["Overview", "Chart", "Financials", "News", "Analyst", "Peers"];
 
 export default function StockDetail() {
   const { symbol } = useParams<{ symbol: string }>();
@@ -24,60 +21,9 @@ export default function StockDetail() {
   
   const [tf, setTf] = useState<string>("1M");
   const [activeTab, setActiveTab] = useState("Overview");
-  
-  const [showAI, setShowAI] = useState(false);
-  const [aiContent, setAiContent] = useState("");
-  const [aiLoading, setAiLoading] = useState(false);
-  const [aiError, setAiError] = useState<string | null>(null);
 
   const chartData = useMemo(() => generateChartData(tfDays[tf]), [tf]);
   const isUp = stock.change >= 0;
-
-  const fetchAI = async () => {
-    if (aiContent && !aiError) { setShowAI(!showAI); return; }
-    setShowAI(true);
-    setAiError(null);
-    setAiLoading(true);
-    setAiContent("");
-    try {
-      const res = await apiClient.post<any>("/api/ai/report", { symbol: stock.symbol });
-      const data = res.data || res; // depending on FallbackResponse structure
-      const markdown = `
-### ${data.company_summary || "Analysis Report"}
-
-**Final Analysis**: ${data.final_analysis_summary || ""}
-
-**Technical**: ${data.technical_analysis || ""}
-**Sentiment**: ${data.sentiment_analysis || ""}
-**Prediction**: ${data.prediction_insight || ""}
-
-**Risks**:
-${(data.risk_factors || []).map((r: string) => `- ${r}`).join('\\n')}
-
-**Limitations**:
-${(data.limitations || []).map((l: string) => `- ${l}`).join('\\n')}
-
-*${data.disclaimer || ""}*
-`;
-      setAiContent(markdown);
-    } catch (e: unknown) {
-      console.error("AI advisor error", e);
-      setAiError(e instanceof Error ? e.message : "Could not load AI analysis.");
-    } finally {
-      setAiLoading(false);
-    }
-  };
-
-  const handleCompare = async () => {
-    try {
-      const res = await apiClient.post<any>("/api/stocks/compare", { symbols: [stock.symbol, "AAPL"] });
-      console.log(res);
-      alert(`Comparison data retrieved for ${stock.symbol} and AAPL. Check console for details.`);
-    } catch (e: unknown) {
-      console.error(e);
-      alert("Failed to compare");
-    }
-  };
 
   return (
     <div className="flex flex-col gap-6 pb-12 w-full animate-fade-in-up">
@@ -140,14 +86,8 @@ ${(data.limitations || []).map((l: string) => `- ${l}`).join('\\n')}
             </div>
             
             <div className="flex flex-col gap-2">
-              <button onClick={fetchAI} className="bg-blue-accent hover:bg-blue-accent/90 text-white px-5 py-2.5 rounded-xl font-bold text-sm shadow-[0_4px_14px_rgba(37,99,255,0.3)] transition-all flex items-center gap-2 justify-center whitespace-nowrap">
-                <Bot size={16} /> Generate AI Report
-              </button>
               <div className="flex gap-2">
                 <WatchlistButton symbol={stock.symbol} exchange={stock.exchange} size="md" />
-                <button onClick={handleCompare} className="bg-bg-secondary text-text-primary border border-border hover:bg-blue-accent/10 hover:border-blue-accent/30 hover:text-blue-accent px-4 py-2 rounded-xl font-bold text-sm transition-all flex-1">
-                  Compare
-                </button>
               </div>
             </div>
           </div>
@@ -173,70 +113,56 @@ ${(data.limitations || []).map((l: string) => `- ${l}`).join('\\n')}
       </div>
 
       {activeTab === "Overview" ? (
-        <CoreQuestionsOverview stock={stock} meta={meta} />
-      ) : (
-      <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-        
-        {/* ── LEFT COLUMN (Main Content) ── */}
-        <div className="xl:col-span-2 flex flex-col gap-6">
-          
-          {/* AI REPORT COMPONENT */}
-          {showAI && (
-            <div className="bg-card-surface border border-purple-accent/30 rounded-2xl overflow-hidden shadow-[0_8px_30px_rgba(124,58,237,0.1)] relative">
-              <div className="absolute top-0 left-0 w-full h-1 bg-gradient-to-r from-blue-accent to-purple-accent" />
+        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
+          <div className="xl:col-span-2">
+            <DecisionSnapshot symbol={stock.symbol} />
+            
+            <div className="bg-card-surface border border-border rounded-2xl overflow-hidden shadow-sm">
+              <div className="px-6 py-4 border-b border-border bg-bg-secondary/50 flex items-center gap-2">
+                <Info className="w-4 h-4 text-blue-accent" />
+                <span className="font-heading font-bold text-text-primary tracking-wide">Company Profile</span>
+              </div>
               <div className="p-6">
-                <div className="flex items-center justify-between mb-6 pb-4 border-b border-border">
-                  <div className="flex items-center gap-3">
-                    <div className="w-10 h-10 rounded-xl bg-purple-accent/10 border border-purple-accent/20 flex items-center justify-center text-purple-accent">
-                      <Bot size={20} />
-                    </div>
-                    <div>
-                      <h2 className="font-heading font-bold text-text-primary text-lg">Institutional AI Report</h2>
-                      <div className="text-xs text-text-muted font-mono mt-0.5">GENERATED FOR {stock.symbol}</div>
-                    </div>
-                  </div>
-                  <button onClick={() => setShowAI(false)} className="text-text-muted hover:text-text-primary text-sm font-bold bg-bg-secondary px-3 py-1.5 rounded-lg border border-border">
-                    Close
-                  </button>
-                </div>
-
-                {aiLoading ? (
-                  <div className="flex flex-col items-center justify-center py-12 gap-4">
-                    <Loader2 className="animate-spin w-8 h-8 text-purple-accent" /> 
-                    <span className="font-mono text-sm font-bold tracking-widest text-text-muted animate-pulse uppercase">Compiling Institutional Analysis...</span>
-                  </div>
-                ) : aiError ? (
-                  <div className="p-4 bg-red-loss/10 border border-red-loss/20 rounded-xl text-red-loss flex items-center justify-between">
-                    <div className="font-bold text-sm">{aiError}</div>
-                    <button onClick={fetchAI} className="text-xs font-bold uppercase tracking-wider bg-red-loss text-white px-3 py-1.5 rounded-lg hover:bg-red-loss/90 transition-colors">
-                      Retry
-                    </button>
-                  </div>
-                ) : (
-                  <div className="prose prose-sm prose-invert max-w-none text-text-primary
-                                  [&_p]:mb-4 last:[&_p]:mb-0 leading-relaxed
-                                  [&_h2]:text-text-primary [&_h2]:text-xl [&_h2]:font-heading [&_h2]:font-bold [&_h2]:mt-8 [&_h2]:mb-4 [&_h2]:pb-2 [&_h2]:border-b [&_h2]:border-border
-                                  [&_h3]:text-blue-accent [&_h3]:text-sm [&_h3]:uppercase [&_h3]:font-bold [&_h3]:mt-6 [&_h3]:mb-2 [&_h3]:tracking-wider
-                                  [&_strong]:text-text-primary [&_strong]:font-bold
-                                  [&_li]:mb-2 [&_ul]:my-4 [&_ul]:pl-5 [&_ul]:list-disc [&_ul]:marker:text-blue-accent
-                                  [&_code]:bg-bg-secondary [&_code]:px-1.5 [&_code]:py-0.5 [&_code]:rounded-md [&_code]:text-purple-accent [&_code]:font-mono [&_code]:text-xs">
-                    <ReactMarkdown>{aiContent}</ReactMarkdown>
-                  </div>
-                )}
-                
-                {!aiLoading && !aiError && (
-                  <div className="mt-8 pt-4 border-t border-border flex justify-end">
-                     <button className="text-xs font-bold uppercase tracking-widest text-text-muted hover:text-text-primary flex items-center gap-2 transition-colors">
-                       Export PDF
-                     </button>
-                  </div>
-                )}
+                <CompanyProfileSection
+                  symbol={stock.symbol}
+                  name={stock.name}
+                  exchange={stock.exchange}
+                  sector={stock.sector}
+                />
               </div>
             </div>
-          )}
-
-          {/* CHART */}
-          <div className="bg-card-surface border border-border rounded-2xl overflow-hidden shadow-sm">
+          </div>
+          
+          <div className="flex flex-col gap-6">
+            {/* STATS */}
+            <div className="bg-card-surface border border-border rounded-2xl overflow-hidden shadow-sm">
+              <div className="px-6 py-4 border-b border-border bg-bg-secondary/50">
+                <span className="font-heading font-bold text-text-primary tracking-wide">Key Statistics</span>
+              </div>
+              <div className="p-2">
+                <table className="w-full text-left border-collapse">
+                  <tbody className="divide-y divide-border/50">
+                    {[
+                      { label: "Market Cap", value: stock.marketCap },
+                      { label: "P/E Ratio", value: stock.pe?.toFixed(2) || "—" },
+                      { label: "52W High", value: stock.high52w ? formatCurrency(stock.high52w, stock.exchange) : "—" },
+                      { label: "52W Low", value: stock.low52w ? formatCurrency(stock.low52w, stock.exchange) : "—" },
+                      { label: "Avg Volume", value: stock.volume },
+                      { label: "Sector", value: stock.sector },
+                    ].map((s) => (
+                      <tr key={s.label} className="hover:bg-blue-accent/5 transition-colors group">
+                        <td className="py-3.5 px-4 text-xs text-text-muted font-bold uppercase tracking-wider">{s.label}</td>
+                        <td className="py-3.5 px-4 text-sm text-text-primary font-mono font-bold text-right group-hover:text-blue-accent transition-colors">{s.value}</td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          </div>
+        </div>
+      ) : activeTab === "Chart" ? (
+        <div className="bg-card-surface border border-border rounded-2xl overflow-hidden shadow-sm">
             <div className="px-6 py-4 border-b border-border flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 bg-bg-secondary/50">
               <span className="font-heading font-bold text-text-primary flex items-center gap-2">
                 <BarChart2 className="w-4 h-4 text-blue-accent" />
@@ -311,89 +237,10 @@ ${(data.limitations || []).map((l: string) => `- ${l}`).join('\\n')}
               </ResponsiveContainer>
             </div>
           </div>
-
-          {/* COMPANY PROFILE */}
-          <div className="bg-card-surface border border-border rounded-2xl overflow-hidden shadow-sm">
-            <div className="px-6 py-4 border-b border-border bg-bg-secondary/50 flex items-center gap-2">
-              <Info className="w-4 h-4 text-blue-accent" />
-              <span className="font-heading font-bold text-text-primary tracking-wide">Company Profile</span>
-            </div>
-            <div className="p-6">
-              <CompanyProfileSection
-                symbol={stock.symbol}
-                name={stock.name}
-                exchange={stock.exchange}
-                sector={stock.sector}
-              />
-            </div>
-          </div>
+      ) : (
+        <div className="py-20 text-center text-text-muted">
+          Section under development.
         </div>
-
-        {/* ── RIGHT COLUMN ── */}
-        <div className="flex flex-col gap-6">
-          
-          {/* STATS */}
-          <div className="bg-card-surface border border-border rounded-2xl overflow-hidden shadow-sm">
-            <div className="px-6 py-4 border-b border-border bg-bg-secondary/50">
-              <span className="font-heading font-bold text-text-primary tracking-wide">Key Statistics</span>
-            </div>
-            <div className="p-2">
-              <table className="w-full text-left border-collapse">
-                <tbody className="divide-y divide-border/50">
-                  {[
-                    { label: "Market Cap", value: stock.marketCap },
-                    { label: "P/E Ratio", value: stock.pe?.toFixed(2) || "—" },
-                    { label: "52W High", value: stock.high52w ? formatCurrency(stock.high52w, stock.exchange) : "—" },
-                    { label: "52W Low", value: stock.low52w ? formatCurrency(stock.low52w, stock.exchange) : "—" },
-                    { label: "Avg Volume", value: stock.volume },
-                    { label: "Sector", value: stock.sector },
-                  ].map((s) => (
-                    <tr key={s.label} className="hover:bg-blue-accent/5 transition-colors group">
-                      <td className="py-3.5 px-4 text-xs text-text-muted font-bold uppercase tracking-wider">{s.label}</td>
-                      <td className="py-3.5 px-4 text-sm text-text-primary font-mono font-bold text-right group-hover:text-blue-accent transition-colors">{s.value}</td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          </div>
-
-          {/* QUANT ENGINE PRO */}
-          <div className="bg-card-surface border border-border rounded-2xl overflow-hidden shadow-sm">
-            <div className="px-6 py-4 border-b border-border bg-bg-secondary/50 flex items-center gap-2">
-              <Target className="w-4 h-4 text-purple-accent" />
-              <span className="font-heading font-bold text-text-primary tracking-wide">Quant Engine Pro</span>
-            </div>
-            <div className="p-6 flex flex-col gap-5">
-              <div className="flex justify-between items-center pb-4 border-b border-border/50">
-                <span className="text-sm font-bold text-text-muted uppercase tracking-wider">AI Quant Signal</span>
-                <span className="px-3 py-1 rounded bg-green-gain/10 text-green-gain font-bold text-sm uppercase tracking-widest border border-green-gain/20">Bullish</span>
-              </div>
-              
-              {[
-                { label: "Momentum Score", val: 85, color: "bg-green-gain" },
-                { label: "Quality Score", val: 92, color: "bg-blue-accent" },
-                { label: "Value Score", val: 45, color: "bg-orange-500" },
-                { label: "Risk Score", val: 30, color: "bg-purple-accent" },
-              ].map((q) => (
-                <div key={q.label} className="flex flex-col gap-1.5">
-                  <div className="flex justify-between text-xs font-bold uppercase tracking-wider">
-                    <span className="text-text-muted">{q.label}</span>
-                    <span className="text-text-primary font-mono">{q.val}/100</span>
-                  </div>
-                  <div className="h-1.5 bg-bg-secondary rounded-full overflow-hidden">
-                    <div className={`h-full ${q.color} rounded-full`} style={{ width: `${q.val}%` }} />
-                  </div>
-                </div>
-              ))}
-            </div>
-          </div>
-
-          {/* INDICATORS (AI Insight Card - Legacy adaptation) */}
-          <AIInsightCard symbol={stock.symbol} exchange={stock.exchange} />
-
-        </div>
-      </div>
       )}
     </div>
   );

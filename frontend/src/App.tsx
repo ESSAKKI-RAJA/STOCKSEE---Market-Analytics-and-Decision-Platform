@@ -11,7 +11,6 @@ import Index from "./pages/Index";
 import Analyse from "./pages/Analyse";
 import Alerts from "./pages/Alerts";
 import Academy from "./pages/Learn";
-import AIAdvisor from "./pages/AIAdvisor";
 import StockDetail from "./pages/StockDetail";
 import CryptoDetail from "./pages/CryptoDetail";
 import ETFDetail from "./pages/ETFDetail";
@@ -49,7 +48,6 @@ const App = () => (
                 <Route path="/academy" element={<Academy />} />
                 <Route path="/heatmaps" element={<Heatmaps />} />
                 <Route path="/news" element={<NewsCenter />} />
-                <Route path="/advisor" element={<AIAdvisor />} />
                 <Route path="/screener" element={<Screener />} />
                 <Route path="/pricing" element={<Pricing />} />
                 <Route path="/stock/:symbol" element={<StockDetail />} />

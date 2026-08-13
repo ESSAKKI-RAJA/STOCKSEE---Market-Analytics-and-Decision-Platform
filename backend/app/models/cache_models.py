@@ -1,6 +1,6 @@
 import uuid
 from datetime import datetime, timezone
-from sqlalchemy import Column, String, Integer, Float, Boolean, DateTime, Text, JSON, Index
+from sqlalchemy import Column, String, Integer, Float, Boolean, DateTime, Text, JSON, Index, ForeignKey
 from app.models.base import Base
 
 def utcnow():
@@ -89,7 +89,7 @@ class UserWatchlist(Base):
     __tablename__ = "user_watchlists"
 
     id = Column(String, primary_key=True, default=generate_uuid)
-    user_id = Column(String, nullable=True) # nullable for local/demo
+    user_id = Column(String(255), ForeignKey("users.id", ondelete="CASCADE"), nullable=True) # nullable for local/demo
     symbol = Column(String, index=True, nullable=False)
     company_name = Column(String, nullable=True)
     created_at = Column(DateTime(timezone=True), default=utcnow, index=True)
