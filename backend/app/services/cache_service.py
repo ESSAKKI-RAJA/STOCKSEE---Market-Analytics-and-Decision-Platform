@@ -31,59 +31,63 @@ def get_cached_payload(symbol: str, endpoint_type: str) -> Optional[Dict[str, An
     If expired, we can return it as 'stale_cache' later if external call fails,
     but this function only returns valid cache. We will provide get_stale_cache as well.
     """
-    with SessionLocal() as db:
-        if endpoint_type in ["quote", "history", "indicators", "heatmap"]:
-            record = db.query(MarketDataCache).filter(
-                MarketDataCache.symbol == symbol,
-                MarketDataCache.endpoint_type == endpoint_type
-            ).order_by(MarketDataCache.created_at.desc()).first()
-            if record and is_cache_valid(record.expires_at):
-                return record.payload_json
-            
-        elif endpoint_type == "news":
-            # For news, we store the full payload in payload_json
-            record = db.query(NewsArticle).filter(
-                NewsArticle.symbol == symbol
-            ).order_by(NewsArticle.created_at.desc()).first()
-            # NewsArticle doesn't have expires_at, so we use created_at + 3 hours
-            if record and is_cache_valid(record.created_at + timedelta(hours=3)):
-                return record.payload_json
+    try:
+        with SessionLocal() as db:
+            if endpoint_type in ["quote", "history", "indicators", "heatmap"]:
+                record = db.query(MarketDataCache).filter(
+                    MarketDataCache.symbol == symbol,
+                    MarketDataCache.endpoint_type == endpoint_type
+                ).order_by(MarketDataCache.created_at.desc()).first()
+                if record and is_cache_valid(record.expires_at):
+                    return record.payload_json
+                
+            elif endpoint_type == "news":
+                record = db.query(NewsArticle).filter(
+                    NewsArticle.symbol == symbol
+                ).order_by(NewsArticle.created_at.desc()).first()
+                if record and is_cache_valid(record.created_at + timedelta(hours=3)):
+                    return record.payload_json
 
-        elif endpoint_type == "sentiment":
-            record = db.query(SentimentScore).filter(
-                SentimentScore.symbol == symbol
-            ).order_by(SentimentScore.created_at.desc()).first()
-            if record and is_cache_valid(record.created_at + timedelta(hours=3)):
-                return record.payload_json
+            elif endpoint_type == "sentiment":
+                record = db.query(SentimentScore).filter(
+                    SentimentScore.symbol == symbol
+                ).order_by(SentimentScore.created_at.desc()).first()
+                if record and is_cache_valid(record.created_at + timedelta(hours=3)):
+                    return record.payload_json
 
-        elif endpoint_type == "report":
-            record = db.query(AIReport).filter(
-                AIReport.symbol == symbol
-            ).order_by(AIReport.created_at.desc()).first()
-            if record and is_cache_valid(record.expires_at):
-                return record.report_json
+            elif endpoint_type == "report":
+                record = db.query(AIReport).filter(
+                    AIReport.symbol == symbol
+                ).order_by(AIReport.created_at.desc()).first()
+                if record and is_cache_valid(record.expires_at):
+                    return record.report_json
+    except Exception as e:
+        logger.error(f"Database error in get_cached_payload: {e}")
 
     return None
 
 
 def get_stale_cache(symbol: str, endpoint_type: str) -> Optional[Dict[str, Any]]:
     """Retrieve the most recent cache regardless of expiry."""
-    with SessionLocal() as db:
-        if endpoint_type in ["quote", "history", "indicators", "heatmap"]:
-            record = db.query(MarketDataCache).filter(
-                MarketDataCache.symbol == symbol,
-                MarketDataCache.endpoint_type == endpoint_type
-            ).order_by(MarketDataCache.created_at.desc()).first()
-            if record: return record.payload_json
-        elif endpoint_type == "news":
-            record = db.query(NewsArticle).filter(NewsArticle.symbol == symbol).order_by(NewsArticle.created_at.desc()).first()
-            if record: return record.payload_json
-        elif endpoint_type == "sentiment":
-            record = db.query(SentimentScore).filter(SentimentScore.symbol == symbol).order_by(SentimentScore.created_at.desc()).first()
-            if record: return record.payload_json
-        elif endpoint_type == "report":
-            record = db.query(AIReport).filter(AIReport.symbol == symbol).order_by(AIReport.created_at.desc()).first()
-            if record: return record.report_json
+    try:
+        with SessionLocal() as db:
+            if endpoint_type in ["quote", "history", "indicators", "heatmap"]:
+                record = db.query(MarketDataCache).filter(
+                    MarketDataCache.symbol == symbol,
+                    MarketDataCache.endpoint_type == endpoint_type
+                ).order_by(MarketDataCache.created_at.desc()).first()
+                if record: return record.payload_json
+            elif endpoint_type == "news":
+                record = db.query(NewsArticle).filter(NewsArticle.symbol == symbol).order_by(NewsArticle.created_at.desc()).first()
+                if record: return record.payload_json
+            elif endpoint_type == "sentiment":
+                record = db.query(SentimentScore).filter(SentimentScore.symbol == symbol).order_by(SentimentScore.created_at.desc()).first()
+                if record: return record.payload_json
+            elif endpoint_type == "report":
+                record = db.query(AIReport).filter(AIReport.symbol == symbol).order_by(AIReport.created_at.desc()).first()
+                if record: return record.report_json
+    except Exception as e:
+        logger.error(f"Database error in get_stale_cache: {e}")
     return None
 
 
@@ -91,55 +95,58 @@ def set_cached_payload(symbol: str, endpoint_type: str, payload: Dict[str, Any],
     """Store payload in cache."""
     expires_at = utcnow() + timedelta(minutes=ttl_minutes)
     
-    with SessionLocal() as db:
-        if endpoint_type in ["quote", "history", "indicators", "heatmap"]:
-            record = MarketDataCache(
-                symbol=symbol,
-                endpoint_type=endpoint_type,
-                payload_json=payload,
-                mode=mode,
-                source=source,
-                expires_at=expires_at
-            )
-            db.add(record)
-            
-        elif endpoint_type == "news":
-            # For simplicity, we just store the whole response in payload_json
-            # and fill required fields with safe defaults if extracting is hard.
-            record = NewsArticle(
-                symbol=symbol,
-                headline=payload.get("articles", [{}])[0].get("headline", "News Update") if payload.get("articles") else "News Update",
-                source=source,
-                payload_json=payload,
-                mode=mode,
-            )
-            db.add(record)
+    try:
+        with SessionLocal() as db:
+            if endpoint_type in ["quote", "history", "indicators", "heatmap"]:
+                record = MarketDataCache(
+                    symbol=symbol,
+                    endpoint_type=endpoint_type,
+                    payload_json=payload,
+                    mode=mode,
+                    source=source,
+                    expires_at=expires_at
+                )
+                db.add(record)
+                
+            elif endpoint_type == "news":
+                # For simplicity, we just store the whole response in payload_json
+                # and fill required fields with safe defaults if extracting is hard.
+                record = NewsArticle(
+                    symbol=symbol,
+                    headline=payload.get("articles", [{}])[0].get("headline", "News Update") if payload.get("articles") else "News Update",
+                    source=source,
+                    payload_json=payload,
+                    mode=mode,
+                )
+                db.add(record)
 
-        elif endpoint_type == "sentiment":
-            record = SentimentScore(
-                symbol=symbol,
-                sentiment_score=payload.get("sentiment_score", 0),
-                overall_sentiment=payload.get("overall_sentiment", "Neutral"),
-                confidence=payload.get("confidence", "Low"),
-                model_used=payload.get("model_used", "Unknown"),
-                article_count=payload.get("article_count", 0),
-                payload_json=payload,
-                mode=mode,
-            )
-            db.add(record)
+            elif endpoint_type == "sentiment":
+                record = SentimentScore(
+                    symbol=symbol,
+                    sentiment_score=payload.get("sentiment_score", 0),
+                    overall_sentiment=payload.get("overall_sentiment", "Neutral"),
+                    confidence=payload.get("confidence", "Low"),
+                    model_used=payload.get("model_used", "Unknown"),
+                    article_count=payload.get("article_count", 0),
+                    payload_json=payload,
+                    mode=mode,
+                )
+                db.add(record)
 
-        elif endpoint_type == "report":
-            record = AIReport(
-                symbol=symbol,
-                report_json=payload,
-                mode=mode,
-                source=source,
-                generated_at=utcnow(),
-                expires_at=expires_at
-            )
-            db.add(record)
-            
-        db.commit()
+            elif endpoint_type == "report":
+                record = AIReport(
+                    symbol=symbol,
+                    report_json=payload,
+                    mode=mode,
+                    source=source,
+                    generated_at=utcnow(),
+                    expires_at=expires_at
+                )
+                db.add(record)
+                
+            db.commit()
+    except Exception as e:
+        logger.error(f"Database error in set_cached_payload: {e}")
 
 
 def clear_expired_cache():

@@ -5,7 +5,7 @@ class Settings(BaseSettings):
     DATABASE_URL: str = ""
     ENVIRONMENT: str = "development"
     LOG_LEVEL: str = "info"
-    CORS_ORIGINS: str = ""
+    CORS_ORIGINS: str = "https://stocksee-market-analytics-and-decis.vercel.app"
     FINNHUB_API_KEY: str = ""
     SUPABASE_URL: str = ""
     SUPABASE_ANON_KEY: str = ""
