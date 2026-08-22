@@ -15,7 +15,7 @@ import StockDetail from "./pages/StockDetail";
 import CryptoDetail from "./pages/CryptoDetail";
 import ETFDetail from "./pages/ETFDetail";
 import SignInPage from "./pages/SignIn";
-import SignUpPage from "./pages/SignUp";
+import SignUpPage from "./pages/Signup";
 import Auth from "./pages/Auth";
 import AuthCallback from "./pages/AuthCallback";
 import Watchlist from "./pages/Watchlist";
