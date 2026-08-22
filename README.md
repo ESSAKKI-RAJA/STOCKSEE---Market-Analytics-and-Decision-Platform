@@ -135,8 +135,8 @@ A comprehensive market command center with everything you need at a glance:
 | **Sentiment Analysis** | [VADER](https://github.com/cjhutto/vaderSentiment), [FinBERT](https://github.com/ProsusAI/finbert) |
 | **ML / Forecasting**   | [scikit-learn](https://scikit-learn.org), [TensorFlow / Keras](https://www.tensorflow.org) (LSTM)  |
 | **Database**           | [Supabase](https://supabase.com) (PostgreSQL + Row Level Security)                                 |
-| **Authentication**     | [Supabase Auth](https://supabase.com/docs/guides/auth) — Email/Password + Google OAuth (PKCE)      |
-| **JWT Validation**     | [PyJWT](https://pyjwt.readthedocs.io) + Supabase JWKS (RS256)                                      |
+| **Authentication**     | [Clerk](https://clerk.com) — Next-gen authentication and user management                           |
+| **JWT Validation**     | [PyJWT](https://pyjwt.readthedocs.io) + Clerk JWKS (RS256)                                         |
 | **Frontend Deploy**    | [Vercel](https://vercel.com)                                                                       |
 | **Backend Deploy**     | [Render](https://render.com)                                                                       |
 
@@ -176,12 +176,11 @@ npm install
 Create `frontend/.env`:
 
 ```env
-VITE_SUPABASE_URL=https://your-project-ref.supabase.co
-VITE_SUPABASE_PUBLISHABLE_KEY=your-supabase-anon-public-key
-VITE_BACKEND_URL=http://localhost:8000
+VITE_CLERK_PUBLISHABLE_KEY=pk_test_...
+VITE_API_BASE_URL=http://localhost:8000
 ```
 
-> **Security note:** `VITE_SUPABASE_PUBLISHABLE_KEY` is the **anon/public** key. Never paste the service role key into frontend environment variables.
+> **Security note:** `VITE_CLERK_PUBLISHABLE_KEY` is the **public** key. Never paste your backend `CLERK_SECRET_KEY` into frontend environment variables.
 
 ---
 
@@ -201,8 +200,8 @@ pip install -r requirements.txt
 Create `backend/.env`:
 
 ```env
-SUPABASE_URL=https://your-project-ref.supabase.co
-SUPABASE_JWT_AUD=authenticated
+DATABASE_URL=postgresql://postgres:[PASSWORD]@aws-0-ap-south-1.pooler.supabase.com:6543/postgres
+CLERK_SECRET_KEY=sk_test_...
 FINNHUB_API_KEY=your-finnhub-api-key
 DISABLE_FINBERT=1
 ```
@@ -241,16 +240,15 @@ npm run dev
 
 | Variable                        | Required | Description                                                                  |
 | ------------------------------- | -------- | ---------------------------------------------------------------------------- |
-| `VITE_SUPABASE_URL`             | ✅       | Supabase project URL                                                         |
-| `VITE_SUPABASE_PUBLISHABLE_KEY` | ✅       | Supabase anon/public API key                                                 |
-| `VITE_BACKEND_URL`              | ✅       | FastAPI base URL (`http://localhost:8000` locally, Render URL in production) |
+| `VITE_CLERK_PUBLISHABLE_KEY`    | ✅       | Clerk Publishable Key                                                        |
+| `VITE_API_BASE_URL`             | ✅       | FastAPI base URL (`http://localhost:8000` locally, Render URL in production) |
 
 ### Backend — `backend/.env`
 
 | Variable           | Required | Description                                                                |
 | ------------------ | -------- | -------------------------------------------------------------------------- |
-| `SUPABASE_URL`     | ✅       | Supabase project URL — used to fetch JWKS for JWT validation               |
-| `SUPABASE_JWT_AUD` | ✅       | JWT audience claim — must be `authenticated`                               |
+| `DATABASE_URL`     | ✅       | PostgreSQL connection string for Supabase database                         |
+| `CLERK_SECRET_KEY` | ✅       | Clerk Secret Key — used to fetch JWKS for JWT validation                   |
 | `FINNHUB_API_KEY`  | ✅       | API key from [finnhub.io](https://finnhub.io) for news and company data    |
 | `DISABLE_FINBERT`  | ⬜       | Set to `1` to skip FinBERT and use VADER (recommended on Render free tier) |
 | `RENDER`           | ⬜       | Auto-set by Render.com — also disables FinBERT on cold starts              |
@@ -296,33 +294,22 @@ npm run dev
 ### Supabase Configuration
 
 1. Create a new project at [supabase.com](https://supabase.com).
-2. Go to **Project Settings → API** and copy:
-   - **Project URL** → use as `VITE_SUPABASE_URL` and `SUPABASE_URL`
-   - **anon public** key → use as `VITE_SUPABASE_PUBLISHABLE_KEY`
-3. Run database migrations using the Supabase CLI:
+2. Go to **Project Settings → Database** and copy the **Connection string (URI)**. Use this as your `DATABASE_URL`.
+3. Run database migrations using Alembic from the `backend` directory:
    ```bash
-   npx supabase db push
+   alembic upgrade head
    ```
-   This creates the `profiles`, `watchlist`, `user_portfolio`, `user_alerts`, and `notifications` tables with Row Level Security policies automatically applied.
-4. Go to **Authentication → URL Configuration** and add your allowed redirect URLs:
-   ```
-   https://stocksee-delta.vercel.app/auth/callback
-   http://localhost:5173/auth/callback
-   ```
+   This creates all required tables (e.g. `users`, `user_preferences`, `watchlists`) in the database.
 
 ---
 
-### Google OAuth Setup
+### Clerk Setup
 
-1. Open [Google Cloud Console](https://console.cloud.google.com) → **APIs & Services → Credentials**.
-2. Click **Create Credentials → OAuth 2.0 Client ID** (Application type: **Web application**).
-3. Under **Authorized redirect URIs**, add:
-   ```
-   https://your-project-ref.supabase.co/auth/v1/callback
-   ```
-4. Copy the **Client ID** and **Client Secret**.
-5. In your Supabase dashboard → **Authentication → Providers → Google** → paste the credentials and toggle the provider on.
-6. Google sign-in will now appear on the `/login`, `/signup`, and `/auth` pages.
+1. Open [Clerk Dashboard](https://dashboard.clerk.com) and create an application.
+2. Select your desired authentication strategies (e.g. Email, Google).
+3. Copy the **Publishable Key** to your `frontend/.env` (`VITE_CLERK_PUBLISHABLE_KEY`).
+4. Copy the **Secret Key** to your `backend/.env` (`CLERK_SECRET_KEY`).
+5. For production, add your Vercel deployment URL to Clerk's allowed redirect URIs and configure DNS domains as instructed by the dashboard.
 
 ---
 
@@ -348,7 +335,7 @@ stocksee/
 │   │   │   ├── TickerBar.tsx        # Standalone scrolling ticker
 │   │   │   └── Topbar.tsx           # Fixed top navbar with live ticker
 │   │   ├── contexts/
-│   │   │   └── AuthContext.tsx      # Global Supabase auth state
+│   │   │   └── AuthContext.tsx      # Global Clerk auth state wrappers if any
 │   │   ├── data/
 │   │   │   └── stockData.ts         # Static stock/index reference data
 │   │   ├── hooks/
@@ -360,8 +347,7 @@ stocksee/
 │   │   │       ├── client.ts        # Supabase JS client instance
 │   │   │       └── types.ts         # Auto-generated database types
 │   │   ├── lib/
-│   │   │   ├── apiClient.ts         # Centralised API client (auto Bearer token)
-│   │   │   ├── supabaseClient.ts    # Canonical Supabase client + OAuth URL helper
+│   │   │   ├── apiClient.ts         # Centralised API client (auto Clerk Bearer token)
 │   │   │   └── utils.ts
 │   │   ├── pages/
 │   │   │   ├── AIAdvisor.tsx
