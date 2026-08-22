@@ -43,3 +43,36 @@ Thumbs.db
 .claude/
 backend/stocksee_dev.db
 *.db
+# Local agent/tooling
+.agents/
+.aider-desk/
+skills-lock.json
+
+# Local generated/debug artifacts
+git_diff.txt
+npm_build.txt
+frontend/npm_build.txt
+
+backend/a_*.txt
+backend/db_schema.json
+backend/diff.txt
+backend/log.txt
+backend/stat.txt
+backend/postgresql_initial.sql
+
+# Temporary investigation scripts
+find_url.py
+find_url2.py
+find_url3.py
+
+# Generated/local audit scripts
+backend/generate_bin*.py
+backend/generate_docs.py
+backend/generate_monitoring_docs.py
+backend/generate_ux_docs.py
+backend/inspect_db.py
+backend/test_bin7.py
+backend/test_engine.py
+
+# Local project handbook
+STOCKSEE_Complete_Handbook.md
