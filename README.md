@@ -6,7 +6,6 @@
 
 <br/>
 
-[![Vercel](https://img.shields.io/badge/Live%20Demo-stocksee--delta.vercel.app-000000?style=for-the-badge&logo=vercel&logoColor=white)](https://stocksee-delta.vercel.app)
 [![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
 [![React](https://img.shields.io/badge/Frontend-React%2018-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
 [![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
@@ -467,7 +466,5 @@ SOFTWARE.
 ---
 
 <div align="center">
-
-[![Live Demo](https://img.shields.io/badge/Live%20Demo-Visit%20StockSee-2563FF?style=for-the-badge&logo=vercel&logoColor=white)](https://stocksee-delta.vercel.app)
 
 </div>
