@@ -1,456 +1,232 @@
-<div align="center">
+# STOCKSEE
 
-# 📈 StockSee
+> An AI-driven market intelligence and decision-support platform that transforms market data, technical signals, company information, news, and sentiment into structured investment intelligence.
 
-### Real-time stock market analysis, AI-powered signals, and portfolio intelligence — all in one terminal.
+**Production Status:** 
+🟢 Frontend deployed (Vercel)
+🟢 Backend deployed (Render)
+🟢 PostgreSQL connected (Supabase)
+🟢 Authentication configured (Clerk)
 
-<br/>
+### Live Application
+**Frontend (Vercel):** [https://stocksee-market-analytics-and-decis.vercel.app/](https://stocksee-market-analytics-and-decis.vercel.app/)  
+**Backend API (Render):** [https://stocksee-market-analytics-and-decision.onrender.com](https://stocksee-market-analytics-and-decision.onrender.com)  
 
-[![FastAPI](https://img.shields.io/badge/Backend-FastAPI-009688?style=for-the-badge&logo=fastapi&logoColor=white)](https://fastapi.tiangolo.com)
-[![React](https://img.shields.io/badge/Frontend-React%2018-61DAFB?style=for-the-badge&logo=react&logoColor=black)](https://react.dev)
-[![TypeScript](https://img.shields.io/badge/TypeScript-5-3178C6?style=for-the-badge&logo=typescript&logoColor=white)](https://www.typescriptlang.org)
-[![Supabase](https://img.shields.io/badge/Auth%20%26%20DB-Supabase-3ECF8E?style=for-the-badge&logo=supabase&logoColor=white)](https://supabase.com)
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg?style=for-the-badge)](LICENSE)
-
-</div>
-
----
-
-## 📋 Table of Contents
-
-- [✨ Features](#-features)
-- [🛠️ Tech Stack](#️-tech-stack)
-- [🚀 Getting Started](#-getting-started)
-  - [Prerequisites](#prerequisites)
-  - [Clone the Repository](#clone-the-repository)
-  - [Frontend Setup](#frontend-setup)
-  - [Backend Setup](#backend-setup)
-  - [Running Locally](#running-locally)
-- [🔑 Environment Variables](#-environment-variables)
-- [☁️ Deployment](#️-deployment)
-  - [Frontend on Vercel](#frontend-on-vercel)
-  - [Backend on Render](#backend-on-render)
-  - [Supabase Configuration](#supabase-configuration)
-  - [Google OAuth Setup](#google-oauth-setup)
-- [🗂️ Project Structure](#️-project-structure)
-- [🤝 Contributing](#-contributing)
-- [📄 License](#-license)
+**Contributor:** Essakki Raja T
 
 ---
 
-## ✨ Features
+## The Problem
 
-### 🏠 Dashboard
+Modern investors often have to move across multiple disjointed sources to understand price behavior, technical signals, company fundamentals, market conditions, breaking news, and sentiment. 
 
-A comprehensive market command center with everything you need at a glance:
+This fragmented information creates significant cognitive and analytical overhead. When an asset's price drops, an investor must manually correlate the price action with technical momentum, sift through unstructured news, evaluate sentiment shifts, and determine their risk exposure.
 
-- **Market Overview** — Live indices, top gainers/losers, and sector performance
-- **Trending Stocks** — Real-time momentum picks across NSE, BSE, NASDAQ, NYSE, and more
-- **AI Top Picks** — Machine-learning-driven stock recommendations with confidence scores
-- **News Sentiment Feed** — VADER + FinBERT sentiment analysis across financial headlines
-- **Sector Heatmap** — Visual heat map of sector performance across global markets
-- **Earnings Calendar** — Upcoming earnings announcements with consensus estimates
-- **Fear & Greed Meter** — Composite market sentiment index
-- **Crypto Movers** — Top 24h cryptocurrency movers and market cap leaders
-- **Watchlist Snapshot** — Quick-glance performance of your saved instruments
-- **Portfolio Insights** — P&L summary, allocation breakdown, and AI-driven portfolio health score
+**STOCKSEE's Approach:**
 
-### 🔍 Analyse — Market Scanner
-
-- Scan **thousands of instruments** across global exchanges and sectors simultaneously
-- Filter by exchange (NSE, BSE, NASDAQ, NYSE, LSE, TSE, HKEX, XETRA, and more)
-- Filter by sector (Technology, Financials, Energy, Healthcare, Consumer, Automotive, Defence, and more)
-- AI signal overlay: **STRONG BUY / BUY / HOLD / SELL / STRONG SELL**
-- Live price feeds with real-time change percentages
-
-### ⭐ Watchlist
-
-- Add any stock, ETF, or crypto to your personal watchlist
-- Real-time price updates with percentage change indicators
-- Row-level security — your list is private and user-scoped
-- One-click navigation to full instrument detail pages
-
-### 💼 Portfolio
-
-- Track holdings across multiple exchanges in one place
-- Automatic **P&L calculation** (unrealised gains/losses)
-- **Sector allocation** breakdown with visual charts
-- AI-powered portfolio health and diversification scoring
-- Add / edit / remove holdings with buy price and quantity tracking
-
-### 🔔 Alerts
-
-- Create price alerts: **above / below** threshold
-- Technical signal alerts: **SMA crossover bullish / bearish**
-- Real-time push notifications when conditions are triggered
-- Toggle alerts on/off without deleting them
-
-### 📰 News Center
-
-- Aggregated financial news from global sources via Finnhub
-- Sentiment-scored headlines (Positive / Neutral / Negative)
-- Filter news by instrument or browse general market news
-- Auto-refreshing feed every 5 minutes
-
-### 🗺️ Heatmaps
-
-- Interactive sector and market-cap heatmaps
-- Visual performance comparison across global equity markets
-- Colour-coded intensity based on daily percentage moves
-
-### 🔎 Screener Pro
-
-- Multi-factor stock screener across fundamental and technical criteria
-- Filter by market cap, P/E ratio, volume, RSI, MACD, and more
-- Save screener configurations for repeated use
-
-### 🎓 Academy
-
-- Curated educational content for investors at every level
-- Articles, glossaries, and guides covering technical analysis, fundamentals, and portfolio management
-
-### ⚙️ Settings
-
-- **Profile** — Update name, country, and experience level
-- **Appearance** — Toggle dark / light mode
-- **Market Preferences** — Set default exchange and currency
-- **Notifications** — Granular control over alert delivery
-- **Security** — Password management and active session review
-- **Danger Zone** — Account deletion with confirmation safeguards
-
----
-
-## 🛠️ Tech Stack
-
-| Layer                  | Technology                                                                                         |
-| ---------------------- | -------------------------------------------------------------------------------------------------- |
-| **Frontend Framework** | [React 18](https://react.dev) + [TypeScript 5](https://www.typescriptlang.org)                     |
-| **Build Tool**         | [Vite](https://vitejs.dev)                                                                         |
-| **Styling**            | [Tailwind CSS v3](https://tailwindcss.com) + [shadcn/ui](https://ui.shadcn.com)                    |
-| **Routing**            | [React Router v6](https://reactrouter.com)                                                         |
-| **Server State**       | [TanStack Query v5](https://tanstack.com/query)                                                    |
-| **Animations**         | [Framer Motion](https://www.framer.com/motion)                                                     |
-| **Backend Framework**  | [FastAPI](https://fastapi.tiangolo.com) (Python 3.11+)                                             |
-| **Market Data**        | [yfinance](https://github.com/ranaroussi/yfinance), [Finnhub](https://finnhub.io)                  |
-| **Sentiment Analysis** | [VADER](https://github.com/cjhutto/vaderSentiment), [FinBERT](https://github.com/ProsusAI/finbert) |
-| **ML / Forecasting**   | [scikit-learn](https://scikit-learn.org), [TensorFlow / Keras](https://www.tensorflow.org) (LSTM)  |
-| **Database**           | [Supabase](https://supabase.com) (PostgreSQL + Row Level Security)                                 |
-| **Authentication**     | [Clerk](https://clerk.com) — Next-gen authentication and user management                           |
-| **JWT Validation**     | [PyJWT](https://pyjwt.readthedocs.io) + Clerk JWKS (RS256)                                         |
-| **Frontend Deploy**    | [Vercel](https://vercel.com)                                                                       |
-| **Backend Deploy**     | [Render](https://render.com)                                                                       |
-
----
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-Ensure the following are installed on your machine:
-
-- **Node.js** ≥ 18 — [nodejs.org](https://nodejs.org)
-- **npm** ≥ 9 (bundled with Node.js)
-- **Python** ≥ 3.11 — [python.org](https://www.python.org/downloads)
-- **pip** ≥ 23
-- A free [Supabase](https://supabase.com) account and project
-- A free [Finnhub](https://finnhub.io) API key
-
----
-
-### Clone the Repository
-
-```bash
-git clone https://github.com/your-username/stocksee.git
-cd stocksee
+```text
+UNSTRUCTURED MARKET INFORMATION
+        ↓
+DATA COLLECTION (yfinance, Finnhub)
+        ↓
+NORMALIZATION (FastAPI)
+        ↓
+ANALYTICS (Pandas, VADER)
+        ↓
+INTELLIGENCE CORE (Signal Synthesis)
+        ↓
+DECISION SUPPORT (React SPA)
 ```
 
+By unifying these pipelines, STOCKSEE provides a structured decision-support experience.
+
 ---
 
-### Frontend Setup
+## Core Product Capabilities
 
-```bash
-cd frontend
-npm install
+| Intelligence Layer | Capability | What it provides |
+|---|---|---|
+| **Market Intelligence** | Real-time / EOD Data | Live OHLCV quotes and historical price action via yfinance. |
+| **Technical Intelligence**| Momentum & Trend | Calculates SMA, MACD, and RSI to identify trend extensions and reversals. |
+| **News Intelligence** | Article Retrieval | Aggregates and normalizes market-moving news via Finnhub. |
+| **Sentiment Intelligence**| NLP Scoring | Uses VADER to assess the polarity and compound sentiment of news flows. |
+| **Risk Intelligence** | Conflict Detection | Automatically flags logical contradictions between price momentum and sentiment. |
+| **Decision Support** | Signal Synthesis | Produces deterministic, evidence-backed labels (e.g. *Bullish Setup*, *Risk Elevated*). |
+
+---
+
+## The STOCKSEE Intelligence Model
+
+STOCKSEE is designed as an intelligence pipeline rather than a simple screener. It combines multiple evidence layers into a single synthesized signal.
+
+```text
+MARKET DATA (OHLCV)
+    +
+TECHNICAL SIGNALS (SMA, RSI, MACD)
+    +
+NEWS (Finnhub Articles)
+    +
+SENTIMENT (VADER NLP)
+    +
+RISK SIGNALS (Volatility, Signal Conflicts)
+    ↓
+STOCKSEE INTELLIGENCE CORE
+    ↓
+STRUCTURED MARKET INSIGHT
+    ↓
+DECISION SUPPORT
 ```
 
-Create `frontend/.env`:
+Rather than predicting the market with arbitrary percentages, STOCKSEE aggregates evidence, synthesizes market context, and provides **risk-aware decision support**.
 
-```env
-VITE_CLERK_PUBLISHABLE_KEY=pk_test_...
-VITE_API_BASE_URL=http://localhost:8000
+---
+
+## Technical Analysis
+
+STOCKSEE computes indicators natively using Pandas directly from raw historical closes. 
+
+### Simple Moving Averages (SMA 20, 50)
+Identifies short-term and medium-term directional trends. STOCKSEE evaluates SMA crossovers to determine bullish or bearish momentum.
+
+### Relative Strength Index (RSI)
+Measures the speed and change of price movements. STOCKSEE flags RSI extensions (>70 Overbought, <30 Oversold) to identify exhaustion risk or potential bounces.
+
+### MACD (Moving Average Convergence Divergence)
+Used to assess trend momentum. STOCKSEE analyzes the MACD histogram to detect underlying momentum strengthening or weakening.
+
+### Volatility & Trend
+Calculates historical standard deviation and flags elevated risk environments when asset volatility exceeds baseline thresholds.
+
+---
+
+## News & Sentiment Intelligence
+
+Sentiment alone is insufficient without market context. STOCKSEE contextualizes natural language processing alongside market data:
+
+```text
+News Sources (Finnhub API)
+   ↓
+Article Retrieval & Normalization
+   ↓
+Processing (Headline + Summary Extraction)
+   ↓
+Sentiment Analysis (VADER Polarity Scores)
+   ↓
+Market Context (Conflict Detection)
+   ↓
+Intelligence Layer
 ```
 
-> **Security note:** `VITE_CLERK_PUBLISHABLE_KEY` is the **public** key. Never paste your backend `CLERK_SECRET_KEY` into frontend environment variables.
+STOCKSEE flags when technicals contradict sentiment (e.g., *Trend is bullish, but recent news sentiment is negative*).
 
 ---
 
-### Backend Setup
+## Decision Support
 
-```bash
-cd backend
+STOCKSEE moves beyond raw charts to answer: *"What does the available evidence mean?"*
 
-# Create and activate a virtual environment
-python -m venv venv
-source venv/bin/activate        # macOS / Linux
-# venv\Scripts\activate         # Windows
+- **Signal Synthesis:** Generates deterministic labels like *Bullish Setup*, *Bearish Setup*, *Neutral / Wait*, or *Risk Elevated* based on strict evidence rules.
+- **Conflict Detection:** Warns users when technical momentum diverges from news sentiment.
+- **Watchlists:** Allows authenticated users to save, persist, and monitor assets of interest.
+- **Market Overview:** High-level dashboards, heatmaps, and screeners to surface actionable setups.
 
-pip install -r requirements.txt
+---
+
+## User Experience
+
+1. **Authenticate:** Secure login via Clerk authentication.
+2. **Explore:** Discover market intelligence via Heatmaps and Screeners.
+3. **Analyze:** Select a specific security to dive deep into Stock Detail and Analysis views.
+4. **Evaluate:** Review technical signals, company context, and recent news sentiment.
+5. **Decide:** Use the Intelligence Core's synthesized signals and risk flags to formulate a decision.
+6. **Monitor:** Save the asset to a personalized, persistent Watchlist.
+
+---
+
+## Security & User Isolation
+
+STOCKSEE is built with a modern, strict authorization boundary:
+
+- **Authentication:** Handled entirely by **Clerk** (Email/Password & Social Logins).
+- **Authorization:** Handled by **FastAPI** using `PyJWT` to verify Clerk JWKS (RS256).
+- **User Isolation:** All personalized resources (Watchlists, Preferences, Portfolios) are strictly tied to the Clerk User ID.
+- **Database:** Supabase PostgreSQL is accessed via SQLAlchemy. Environment variables securely manage the `DATABASE_URL` pooling connection.
+- **CORS:** Render backend strictly enforces allowed origins matching the Vercel production URL.
+
+---
+
+## Technical Architecture
+
+```text
+       React + Vite Frontend (Vercel)
+                     │
+                     ▼
+             Clerk Authentication
+                     │
+                     ▼
+         FastAPI Backend API (Render)
+                     │
+       ┌─────────────┴─────────────┐
+       ▼                           ▼
+Intelligence Services          PostgreSQL
+ (Pandas, VADER)               (Supabase)
+       │
+ ┌─────┼──────────┐
+ ▼     ▼          ▼
+Market Data     News
+(yfinance)    (Finnhub)
 ```
 
-Create `backend/.env`:
-
-```env
-DATABASE_URL=postgresql://postgres:[PASSWORD]@aws-0-ap-south-1.pooler.supabase.com:6543/postgres
-CLERK_SECRET_KEY=sk_test_...
-FINNHUB_API_KEY=your-finnhub-api-key
-DISABLE_FINBERT=1
-```
-
-> **Tip:** `DISABLE_FINBERT=1` skips loading the FinBERT transformer model and uses the faster VADER fallback instead. Recommended locally and on low-memory servers.
+### Stack Details
+- **Frontend:** React, TypeScript, Vite, Tailwind CSS, shadcn/ui.
+- **Backend:** Python, FastAPI, SQLAlchemy, Alembic, Pandas, VADER.
+- **Database:** Supabase PostgreSQL.
+- **Deployment:** Vercel (Frontend), Render (Backend).
 
 ---
 
-### Running Locally
+## Database Architecture
 
-**Terminal 1 — Backend:**
+The system utilizes 13 application tables managed via Alembic migrations.
 
-```bash
-cd backend
-source venv/bin/activate
-uvicorn main:app --reload --port 8000
-```
-
-- API: `http://localhost:8000`
-- Interactive docs: `http://localhost:8000/docs`
-
-**Terminal 2 — Frontend:**
-
-```bash
-cd frontend
-npm run dev
-```
-
-- App: `http://localhost:5173`
+**Key Entities:**
+- **Users:** `User`, `UserPreference`, `UserPortfolio`
+- **Market & Tech:** `CompanyProfile`, `OHLCVCache`, `TechnicalIndicator`
+- **Intelligence:** `MarketDataCache`, `NewsArticle`, `SentimentScore`, `AIReport`, `SourceLog`, `ApiHealthLog`
+- **Decision:** `UserWatchlist`
 
 ---
 
-## 🔑 Environment Variables
+## API Architecture
 
-### Frontend — `frontend/.env`
+The FastAPI backend is logically grouped by functional domain:
 
-| Variable                        | Required | Description                                                                  |
-| ------------------------------- | -------- | ---------------------------------------------------------------------------- |
-| `VITE_CLERK_PUBLISHABLE_KEY`    | ✅       | Clerk Publishable Key                                                        |
-| `VITE_API_BASE_URL`             | ✅       | FastAPI base URL (`http://localhost:8000` locally, Render URL in production) |
-
-### Backend — `backend/.env`
-
-| Variable           | Required | Description                                                                |
-| ------------------ | -------- | -------------------------------------------------------------------------- |
-| `DATABASE_URL`     | ✅       | PostgreSQL connection string for Supabase database                         |
-| `CLERK_SECRET_KEY` | ✅       | Clerk Secret Key — used to fetch JWKS for JWT validation                   |
-| `FINNHUB_API_KEY`  | ✅       | API key from [finnhub.io](https://finnhub.io) for news and company data    |
-| `DISABLE_FINBERT`  | ⬜       | Set to `1` to skip FinBERT and use VADER (recommended on Render free tier) |
-| `RENDER`           | ⬜       | Auto-set by Render.com — also disables FinBERT on cold starts              |
+- **Authentication (`deps.py`):** JWT verification and user resolution.
+- **Market Data & Technicals (`stocks.py`):** OHLCV retrieval and indicator calculation.
+- **Intelligence (`ai.py`):** Signal generation and sentiment synthesis.
+- **Monitoring (`health.py`, `system.py`):** Liveness probes and caching metrics.
 
 ---
 
-## ☁️ Deployment
+## Performance & Reliability
 
-### Frontend on Vercel
-
-1. Push your repo to GitHub.
-2. Go to [vercel.com](https://vercel.com) → **New Project** → import your repository.
-3. Set **Root Directory** to `frontend`.
-4. Add all `VITE_*` environment variables under **Project Settings → Environment Variables**.
-5. Vercel detects Vite automatically — no build command changes needed.
-6. The `frontend/vercel.json` rewrite rule ensures all client-side routes resolve correctly:
-
-```json
-{
-  "rewrites": [{ "source": "/(.*)", "destination": "/index.html" }]
-}
-```
+- **Aggressive Caching:** High-latency upstream requests (yfinance, Finnhub) are cached in the PostgreSQL `MarketDataCache` with distinct TTLs (e.g., 5 mins for quotes, 3 hours for news).
+- **Graceful Fallbacks:** If API keys are missing or upstream providers fail, STOCKSEE automatically degrades to stale cache data or clearly-labeled demo fallback data to ensure the platform remains functional.
 
 ---
 
-### Backend on Render
+## Why STOCKSEE?
 
-1. Go to [render.com](https://render.com) → **New Web Service** → connect your repo.
-2. Set **Root Directory** to `backend`.
-3. **Build Command:**
-   ```
-   pip install -r requirements.txt
-   ```
-4. **Start Command:**
-   ```
-   uvicorn main:app --host 0.0.0.0 --port $PORT
-   ```
-5. Add backend environment variables under **Environment**.
-6. Set `DISABLE_FINBERT=1` on the free tier to stay within memory limits.
+Why does STOCKSEE exist alongside platforms like Yahoo Finance or TradingView?
+
+STOCKSEE is designed around a specific product thesis: **synthesizing fragmented market evidence into a structured decision-support experience.** 
+
+While traditional platforms provide excellent raw charting, they leave the burden of synthesis entirely on the user. STOCKSEE unifies **DATA → CONTEXT → INTELLIGENCE → DECISION** into a single cohesive pipeline.
 
 ---
 
-### Supabase Configuration
+## License
 
-1. Create a new project at [supabase.com](https://supabase.com).
-2. Go to **Project Settings → Database** and copy the **Connection string (URI)**. Use this as your `DATABASE_URL`.
-3. Run database migrations using Alembic from the `backend` directory:
-   ```bash
-   alembic upgrade head
-   ```
-   This creates all required tables (e.g. `users`, `user_preferences`, `watchlists`) in the database.
+This project is proprietary and confidential.
 
----
-
-### Clerk Setup
-
-1. Open [Clerk Dashboard](https://dashboard.clerk.com) and create an application.
-2. Select your desired authentication strategies (e.g. Email, Google).
-3. Copy the **Publishable Key** to your `frontend/.env` (`VITE_CLERK_PUBLISHABLE_KEY`).
-4. Copy the **Secret Key** to your `backend/.env` (`CLERK_SECRET_KEY`).
-5. For production, add your Vercel deployment URL to Clerk's allowed redirect URIs and configure DNS domains as instructed by the dashboard.
-
----
-
-## 🗂️ Project Structure
-
-```
-stocksee/
-├── frontend/                        # Vite + React + TypeScript
-│   ├── public/
-│   ├── src/
-│   │   ├── assets/                  # Static assets (logos, images)
-│   │   ├── components/
-│   │   │   ├── ui/                  # shadcn/ui primitive components
-│   │   │   ├── AISentiment.tsx      # AI news signal cards
-│   │   │   ├── Layout.tsx           # App shell (sidebar + topbar)
-│   │   │   ├── MarketNews.tsx       # Live news feed widget
-│   │   │   ├── Navbar.tsx           # Public/marketing navbar
-│   │   │   ├── NotificationsBell.tsx
-│   │   │   ├── ProtectedRoute.tsx   # Auth guard — redirects to /login
-│   │   │   ├── SectorHeatmap.tsx
-│   │   │   ├── Sidebar.tsx          # Responsive sidebar drawer
-│   │   │   ├── StockCard.tsx
-│   │   │   ├── TickerBar.tsx        # Standalone scrolling ticker
-│   │   │   └── Topbar.tsx           # Fixed top navbar with live ticker
-│   │   ├── contexts/
-│   │   │   └── AuthContext.tsx      # Global Clerk auth state wrappers if any
-│   │   ├── data/
-│   │   │   └── stockData.ts         # Static stock/index reference data
-│   │   ├── hooks/
-│   │   │   ├── useAlerts.ts
-│   │   │   ├── useNotifications.ts
-│   │   │   └── useWatchlist.ts
-│   │   ├── integrations/
-│   │   │   └── supabase/
-│   │   │       ├── client.ts        # Supabase JS client instance
-│   │   │       └── types.ts         # Auto-generated database types
-│   │   ├── lib/
-│   │   │   ├── apiClient.ts         # Centralised API client (auto Clerk Bearer token)
-│   │   │   └── utils.ts
-│   │   ├── pages/
-│   │   │   ├── AIAdvisor.tsx
-│   │   │   ├── Alerts.tsx
-│   │   │   ├── Analyse.tsx          # Market scanner
-│   │   │   ├── Auth.tsx             # Combined sign-in / sign-up
-│   │   │   ├── AuthCallback.tsx     # OAuth PKCE callback handler
-│   │   │   ├── CryptoDetail.tsx
-│   │   │   ├── ETFDetail.tsx
-│   │   │   ├── Heatmaps.tsx
-│   │   │   ├── Index.tsx            # Dashboard
-│   │   │   ├── Learn.tsx            # Academy
-│   │   │   ├── Login.tsx
-│   │   │   ├── NewsCenter.tsx
-│   │   │   ├── NotFound.tsx
-│   │   │   ├── Portfolio.tsx
-│   │   │   ├── Pricing.tsx
-│   │   │   ├── Screener.tsx
-│   │   │   ├── Settings.tsx
-│   │   │   ├── Signup.tsx
-│   │   │   ├── StockDetail.tsx
-│   │   │   └── Watchlist.tsx
-│   │   ├── App.tsx                  # Root router and providers
-│   │   ├── index.css                # Tailwind base + global styles + keyframes
-│   │   └── main.tsx                 # React DOM entry point
-│   ├── vercel.json                  # SPA rewrite rule
-│   ├── tailwind.config.ts
-│   ├── tsconfig.json
-│   └── package.json
-│
-├── backend/
-│   ├── main.py                      # FastAPI app — routes, JWT auth, ML, caching
-│   ├── requirements.txt
-│   └── .env                         # Local secrets (gitignored)
-│
-├── supabase/
-│   ├── config.toml
-│   └── migrations/                  # SQL migrations with RLS policies
-│
-└── README.md
-```
-
----
-
-## 🤝 Contributing
-
-Contributions, issues, and feature requests are welcome!
-
-1. **Fork** the repository.
-2. Create a feature branch:
-   ```bash
-   git checkout -b feat/your-feature-name
-   ```
-3. Make your changes and ensure the build passes:
-   ```bash
-   cd frontend && npm run build
-   ```
-4. Commit with a clear message:
-   ```bash
-   git commit -m "feat: add real-time options flow to dashboard"
-   ```
-5. Push and open a **Pull Request** against `main`.
-
-### Guidelines
-
-- Keep pull requests focused — one feature or fix per PR.
-- Add TypeScript types for any new data shapes.
-- All backend routes handling user data must use the `require_user` dependency.
-- Never commit `.env` files, API keys, or secrets.
-- Follow the existing code style — no linter warnings.
-
----
-
-## 📄 License
-
-This project is licensed under the **MIT License**.
-
-```
-MIT License
-
-Copyright (c) 2026
-
-Permission is hereby granted, free of charge, to any person obtaining a copy
-of this software and associated documentation files (the "Software"), to deal
-in the Software without restriction, including without limitation the rights
-to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
-copies of the Software, and to permit persons to whom the Software is
-furnished to do so, subject to the following conditions:
-
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
-
-THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
-IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
-FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
-AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
-LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
-OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN THE
-SOFTWARE.
-```
-
----
-
-<div align="center">
-
-</div>
+*(c) 2024 Essakki Raja T. All rights reserved.*
