@@ -4,6 +4,12 @@
 
 ![STOCKSEE Banner](frontend/public/favicon.png) <!-- Replace with actual banner if available -->
 
+## 🚀 Live Production
+
+**[Open STOCKSEE →](https://stocksee-market-analytics-and-decis.vercel.app/)**
+
+> Don't predict the market. Understand it.
+
 ## Why STOCKSEE Exists
 
 Financial platforms overwhelm users with prices, charts, indicators, news, and signals, but often fail to answer the most critical questions:
