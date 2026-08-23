@@ -11,6 +11,7 @@ import NotificationsBell from "./NotificationsBell";
 
 interface TopbarProps {
   onMenuToggle: () => void;
+  onOpenCommandSearch: () => void;
 }
 
 function getMarketStatus(): { open: boolean; label: string } {
@@ -22,15 +23,10 @@ function getMarketStatus(): { open: boolean; label: string } {
   return { open, label: open ? "OPEN" : "CLOSED" };
 }
 
-export default function Topbar({ onMenuToggle }: TopbarProps) {
-  const [search, setSearch] = useState("");
-  const [showResults, setShowResults] = useState(false);
+export default function Topbar({ onMenuToggle, onOpenCommandSearch }: TopbarProps) {
   const [userMenuOpen, setUserMenuOpen] = useState(false);
-  const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
-  const searchRef = useRef<HTMLDivElement>(null);
   const userMenuRef = useRef<HTMLDivElement>(null);
-  const mobileSearchRef = useRef<HTMLDivElement>(null);
 
   const navigate = useNavigate();
   const { user, signOut } = useAuth();
@@ -39,28 +35,10 @@ export default function Topbar({ onMenuToggle }: TopbarProps) {
   const market = getMarketStatus();
   const tickerItems = useMemo(() => [...marketIndices, ...marketIndices], []);
 
-  const results = useMemo(() => {
-    const q = search.trim().toLowerCase();
-    if (!q) return [];
-    return allStocks
-      .filter(
-        (s) =>
-          s.symbol.toLowerCase().includes(q) ||
-          s.name.toLowerCase().includes(q)
-      )
-      .slice(0, 8);
-  }, [search]);
-
   useEffect(() => {
     const handler = (e: MouseEvent) => {
-      if (searchRef.current && !searchRef.current.contains(e.target as Node)) {
-        setShowResults(false);
-      }
       if (userMenuRef.current && !userMenuRef.current.contains(e.target as Node)) {
         setUserMenuOpen(false);
-      }
-      if (mobileSearchRef.current && !mobileSearchRef.current.contains(e.target as Node)) {
-        setMobileSearchOpen(false);
       }
     };
     document.addEventListener("mousedown", handler);
@@ -70,30 +48,12 @@ export default function Topbar({ onMenuToggle }: TopbarProps) {
   useEffect(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key === "Escape") {
-        setShowResults(false);
         setUserMenuOpen(false);
-        setMobileSearchOpen(false);
-      }
-      if (e.key === "/" && (document.activeElement as HTMLElement)?.tagName !== "INPUT") {
-        e.preventDefault();
-        (searchRef.current?.querySelector("input") as HTMLInputElement | null)?.focus();
       }
     };
     document.addEventListener("keydown", handler);
     return () => document.removeEventListener("keydown", handler);
   }, []);
-
-  const goToStock = (symbol: string) => {
-    navigate(`/stock/${symbol}`);
-    setSearch("");
-    setShowResults(false);
-    setMobileSearchOpen(false);
-  };
-
-  const handleSubmit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (results[0]) goToStock(results[0].symbol);
-  };
 
   const handleSignOut = async () => {
     await signOut();
@@ -177,106 +137,26 @@ export default function Topbar({ onMenuToggle }: TopbarProps) {
       <div className="flex items-center gap-2 ml-auto lg:ml-0 shrink-0">
 
         {/* Search — desktop */}
-        <div className="hidden md:block relative" ref={searchRef}>
-          <form onSubmit={handleSubmit}>
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted pointer-events-none" />
-              <input
-                value={search}
-                onChange={(e) => { setSearch(e.target.value); setShowResults(true); }}
-                onFocus={() => setShowResults(true)}
-                placeholder="Command Search... (/)"
-                className="h-9 w-52 lg:w-72 bg-bg-primary border border-border rounded text-[13px] font-mono text-text-primary pl-9 pr-3 outline-none focus:border-sky-500 transition-all placeholder:text-text-muted"
-              />
-            </div>
-          </form>
-
-          {showResults && results.length > 0 && (
-            <div className="absolute top-[calc(100%+8px)] left-0 right-0 bg-zinc-900 border border-zinc-800 rounded z-50 max-h-80 overflow-y-auto p-1.5 shadow-xl">
-              <div className="px-3 py-2 text-[10px] font-bold tracking-widest uppercase text-text-muted font-heading">
-                Results
-              </div>
-              {results.map((s) => {
-                const up = s.change >= 0;
-                return (
-                  <button
-                    key={`${s.exchange}-${s.symbol}`}
-                    onClick={() => goToStock(s.symbol)}
-                    className="w-full flex items-center justify-between px-3 py-2.5 rounded hover:bg-zinc-800 transition-colors text-left group border border-transparent hover:border-zinc-700"
-                  >
-                    <div className="flex items-center gap-2.5">
-                      <div className="min-w-0">
-                        <div className="font-mono text-[13px] font-bold text-text-primary group-hover:text-sky-500 transition-colors">
-                          {s.symbol}
-                        </div>
-                        <div className="text-[11px] text-text-muted truncate max-w-[150px]">{s.name}</div>
-                      </div>
-                    </div>
-                    <div className="flex flex-col items-end gap-0.5 shrink-0 ml-2">
-                      <span className={`font-mono text-xs font-bold ${up ? "text-green-gain" : "text-red-loss"}`}>
-                        {up ? "+" : ""}{s.changePercent?.toFixed(2) ?? "0.00"}%
-                      </span>
-                      <span className="text-[10px] text-text-muted uppercase font-mono">{s.exchange}</span>
-                    </div>
-                  </button>
-                );
-              })}
-            </div>
-          )}
+        <div className="hidden md:block">
+          <button
+            onClick={onOpenCommandSearch}
+            className="flex items-center h-9 w-52 lg:w-72 bg-zinc-950 border border-zinc-800 rounded text-[13px] font-mono text-zinc-500 hover:text-zinc-400 hover:border-zinc-700 transition-all pl-3 text-left"
+          >
+            <Search className="w-4 h-4 mr-2" />
+            <span className="flex-1">Command Search...</span>
+            <span className="mr-2 text-[10px] tracking-wider border border-zinc-800 rounded px-1.5 py-0.5">⌘K</span>
+          </button>
         </div>
 
         {/* Search icon — mobile */}
-        <div className="md:hidden relative" ref={mobileSearchRef}>
-          {mobileSearchOpen ? (
-            <div className="absolute right-0 top-1/2 -translate-y-1/2 flex items-center gap-2 z-10">
-              <div className="relative">
-                <Search className="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-text-muted pointer-events-none" />
-                <input
-                  autoFocus
-                  value={search}
-                  onChange={(e) => setSearch(e.target.value)}
-                  onKeyDown={(e) => {
-                    if (e.key === "Enter" && results[0]) goToStock(results[0].symbol);
-                  }}
-                  placeholder="Search…"
-                  className="h-9 w-44 bg-card-surface border border-blue-accent rounded-xl text-sm text-text-primary pl-9 pr-3 outline-none"
-                />
-              </div>
-              <button
-                onClick={() => { setMobileSearchOpen(false); setSearch(""); }}
-                className="w-8 h-8 flex items-center justify-center text-text-muted hover:text-text-primary"
-              >
-                <X className="w-4 h-4" />
-              </button>
-              {search && results.length > 0 && (
-                <div className="absolute top-full right-0 mt-2 w-64 bg-[#1a1f2e] border border-[rgba(255,255,255,0.12)] rounded-xl shadow-[0_8px_32px_rgba(0,0,0,0.6)] z-50 max-h-64 overflow-y-auto p-1.5">
-                  {results.map((s) => (
-                    <button
-                      key={s.symbol}
-                      onClick={() => goToStock(s.symbol)}
-                      className="w-full flex items-center gap-2.5 px-3 py-2.5 rounded-lg hover:bg-blue-accent/10 transition-colors text-left"
-                    >
-                      <div className="w-7 h-7 rounded-lg bg-bg-primary border border-border flex items-center justify-center font-bold text-xs text-text-primary shrink-0">
-                        {s.symbol[0]}
-                      </div>
-                      <div className="min-w-0">
-                        <div className="font-mono text-sm font-bold text-text-primary">{s.symbol}</div>
-                        <div className="text-xs text-text-muted truncate">{s.name}</div>
-                      </div>
-                    </button>
-                  ))}
-                </div>
-              )}
-            </div>
-          ) : (
-            <button
-              onClick={() => setMobileSearchOpen(true)}
-              className="w-9 h-9 flex items-center justify-center rounded-lg text-text-muted hover:text-text-primary hover:bg-border transition-colors"
-              aria-label="Search"
-            >
-              <Search className="w-4 h-4" />
-            </button>
-          )}
+        <div className="md:hidden">
+          <button
+            onClick={onOpenCommandSearch}
+            className="w-9 h-9 flex items-center justify-center rounded-lg text-text-muted hover:text-text-primary hover:bg-border transition-colors"
+            aria-label="Search"
+          >
+            <Search className="w-4 h-4" />
+          </button>
         </div>
 
         {/* Market status */}

@@ -3,19 +3,40 @@ import { Outlet, useLocation } from "react-router-dom";
 import Sidebar from "./Sidebar";
 import Topbar from "./Topbar";
 import StatusBadge from "./StatusBadge";
+import CommandSearch from "./CommandSearch";
 
 export default function Layout() {
   const location = useLocation();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+  const [commandSearchOpen, setCommandSearchOpen] = useState(false);
 
   useEffect(() => {
     setSidebarOpen(false);
   }, [location.pathname]);
 
+  useEffect(() => {
+    const handleKeyDown = (e: KeyboardEvent) => {
+      // Open on Cmd+K or / (when not in an input)
+      if (
+        (e.key === "k" && (e.metaKey || e.ctrlKey)) ||
+        (e.key === "/" && (document.activeElement as HTMLElement)?.tagName !== "INPUT")
+      ) {
+        e.preventDefault();
+        setCommandSearchOpen(true);
+      }
+    };
+    window.addEventListener("keydown", handleKeyDown);
+    return () => window.removeEventListener("keydown", handleKeyDown);
+  }, []);
+
   return (
     <div className="bg-bg-primary text-text-primary min-h-screen font-body">
-      <Topbar onMenuToggle={() => setSidebarOpen((o) => !o)} />
+      <Topbar
+        onMenuToggle={() => setSidebarOpen((o) => !o)}
+        onOpenCommandSearch={() => setCommandSearchOpen(true)}
+      />
       <Sidebar open={sidebarOpen} onClose={() => setSidebarOpen(false)} />
+      <CommandSearch isOpen={commandSearchOpen} onClose={() => setCommandSearchOpen(false)} />
 
       <div className="pt-14 lg:pt-16 lg:ml-[240px] min-h-screen pb-8">
         <main
