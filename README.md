@@ -1,232 +1,148 @@
 # STOCKSEE
 
-> An AI-driven market intelligence and decision-support platform that transforms market data, technical signals, company information, news, and sentiment into structured investment intelligence.
+> "Don't predict the market. Understand it."
 
-**Production Status:** 
-🟢 Frontend deployed (Vercel)
-🟢 Backend deployed (Render)
-🟢 PostgreSQL connected (Supabase)
-🟢 Authentication configured (Clerk)
+![STOCKSEE Banner](frontend/public/favicon.png) <!-- Replace with actual banner if available -->
 
-### Live Application
-**Frontend (Vercel):** [https://stocksee-market-analytics-and-decis.vercel.app/](https://stocksee-market-analytics-and-decis.vercel.app/)  
-**Backend API (Render):** [https://stocksee-market-analytics-and-decision.onrender.com](https://stocksee-market-analytics-and-decision.onrender.com)  
+## Why STOCKSEE Exists
 
-**Contributor:** Essakki Raja T
+Financial platforms overwhelm users with prices, charts, indicators, news, and signals, but often fail to answer the most critical questions:
 
----
+- **What actually changed?**
+- **Why did it change?**
+- **How strong is the evidence?**
+- **What conflicts with the thesis?**
+- **How reliable is the underlying data?**
 
-## The Problem
+STOCKSEE is designed around answering those questions. It is not trying to tell users what stock to buy. It is an intelligence system designed to help users understand the market through evidence, not hype.
 
-Modern investors often have to move across multiple disjointed sources to understand price behavior, technical signals, company fundamentals, market conditions, breaking news, and sentiment. 
+## Product Philosophy
 
-This fragmented information creates significant cognitive and analytical overhead. When an asset's price drops, an investor must manually correlate the price action with technical momentum, sift through unstructured news, evaluate sentiment shifts, and determine their risk exposure.
+- **Evidence over hype**: Analysis is derived from data, not sentiment algorithms alone.
+- **Explanation over prediction**: We surface *why* something is happening.
+- **Uncertainty over false confidence**: If data conflicts or is unreliable, STOCKSEE flags it.
+- **Data quality transparency**: You always know if you're looking at live, delayed, or fallback demo data.
+- **Decision intelligence**: Insights are grouped into actionable clusters.
+- **Institutional rigor**: Dense, readable, and highly analytical.
 
-**STOCKSEE's Approach:**
+## Core Intelligence Loop
 
-```text
-UNSTRUCTURED MARKET INFORMATION
-        ↓
-DATA COLLECTION (yfinance, Finnhub)
-        ↓
-NORMALIZATION (FastAPI)
-        ↓
-ANALYTICS (Pandas, VADER)
-        ↓
-INTELLIGENCE CORE (Signal Synthesis)
-        ↓
-DECISION SUPPORT (React SPA)
+```mermaid
+graph TD
+    A[Market Data] --> B[Technical Indicators]
+    A --> C[News]
+    C --> D[Sentiment Analysis]
+    B --> E[Prediction / Trend Projection]
+    D --> F[Evidence Aggregation]
+    E --> F
+    F --> G[Risk & Conflict Analysis]
+    G --> H[Decision Intelligence]
 ```
 
-By unifying these pipelines, STOCKSEE provides a structured decision-support experience.
+## Key Capabilities
 
----
+- **Market Context**: Instantly grasp the broader market state.
+- **Real-time Quotes & Historical Data**: Granular OHLCV data backed by an orchestrated provider hierarchy.
+- **Technical Indicators**: On-the-fly calculation of RSI, MACD, and moving averages.
+- **Signal Generation**: Deterministic heuristic intelligence engine combining technicals and sentiment.
+- **News Intelligence**: Aggregated market news tied directly to sentiment analysis.
+- **Evidence Panels & Risk Assessment**: See exactly what supports a bullish or bearish thesis and where conflicts exist.
+- **Data Quality Badges**: Transparent UI indicators for data source and confidence levels.
+- **Watchlist Intelligence**: Monitor your portfolio with instant signal updates.
+- **Command Search (⌘K)**: Global, keyboard-driven institutional command palette for instant navigation.
 
-## Core Product Capabilities
+## Intelligence Workspace
 
-| Intelligence Layer | Capability | What it provides |
-|---|---|---|
-| **Market Intelligence** | Real-time / EOD Data | Live OHLCV quotes and historical price action via yfinance. |
-| **Technical Intelligence**| Momentum & Trend | Calculates SMA, MACD, and RSI to identify trend extensions and reversals. |
-| **News Intelligence** | Article Retrieval | Aggregates and normalizes market-moving news via Finnhub. |
-| **Sentiment Intelligence**| NLP Scoring | Uses VADER to assess the polarity and compound sentiment of news flows. |
-| **Risk Intelligence** | Conflict Detection | Automatically flags logical contradictions between price momentum and sentiment. |
-| **Decision Support** | Signal Synthesis | Produces deterministic, evidence-backed labels (e.g. *Bullish Setup*, *Risk Elevated*). |
+STOCKSEE utilizes a Stitch-inspired institutional design language:
+- **Ink & Slate Visuals**: A deep, near-black background with zinc/slate surfaces.
+- **Institutional Density**: A 12-column analytical layout designed to maximize information density without clutter.
+- **Restrained Color Palette**: Emerald (bullish), Rose (bearish), Amber (uncertainty), and Sky (interaction).
+- **Typography**: Monospaced financial data (JetBrains Mono) and clean UI text (Inter) for absolute precision.
 
----
+## Market Data Architecture
 
-## The STOCKSEE Intelligence Model
+STOCKSEE uses a resilient, fallback-driven data architecture to ensure availability while maintaining absolute transparency.
 
-STOCKSEE is designed as an intelligence pipeline rather than a simple screener. It combines multiple evidence layers into a single synthesized signal.
+**Quote Providers:**
+`Finnhub` → `YFinance` → `Demo fallback`
 
-```text
-MARKET DATA (OHLCV)
-    +
-TECHNICAL SIGNALS (SMA, RSI, MACD)
-    +
-NEWS (Finnhub Articles)
-    +
-SENTIMENT (VADER NLP)
-    +
-RISK SIGNALS (Volatility, Signal Conflicts)
-    ↓
-STOCKSEE INTELLIGENCE CORE
-    ↓
-STRUCTURED MARKET INSIGHT
-    ↓
-DECISION SUPPORT
+**History Providers:**
+`Alpha Vantage` → `Finnhub` → `YFinance` → `Demo fallback`
+
+*Why separate chains?* 
+To ensure that a rate-limit on a historical provider (e.g., Alpha Vantage's free tier) does not accidentally degrade real-time quote capabilities if Finnhub is still operational. Data quality badges in the UI explicitly surface when data degrades to a fallback or demo state.
+
+## Production Architecture
+
+- **Frontend**: React, TypeScript, Vite, Tailwind CSS, Lucide Icons, Recharts.
+- **Backend**: FastAPI, Python, SQLAlchemy, Alembic.
+- **Database**: PostgreSQL (Supabase) via Transaction Pooler.
+- **Authentication**: Clerk.
+- **Caching**: PostgreSQL-backed intelligent payload caching.
+- **Sentiment Engine**: VADER heuristic sentiment analysis.
+- **Deployment**: Vercel (Frontend), Render (Backend).
+
+## Reliability Model
+
+`Real data` → `Provider fallback` → `Demo fallback` → `Transparent data quality`
+
+STOCKSEE will **never** silently present demo data as real. If the provider chain fails due to datacenter rate-limits or missing API keys, the UI clearly reflects a "LOW" data quality or "Demo" state.
+
+## Security
+
+- **Environment-based Secrets**: No keys are committed to the repository.
+- **Clerk Authentication**: Secure, managed identity.
+- **Protected Endpoints**: API routes are secured and isolated.
+- **CORS Controls**: Strict origin enforcement.
+
+## Current Production Status
+
+- **Frontend Deployment**: Operational (Vercel)
+- **Backend Deployment**: Operational (Render)
+- **PostgreSQL**: Connected (Supabase Transaction Pooler)
+- **Finnhub Real-time Quote**: Operational
+- **Historical Data**: Subject to provider availability / gracefully falls back
+- **Signal Engine**: Operational
+- **Authentication**: Operational
+
+## Development Setup
+
+### Environment Variables
+Configure the following variables in your `.env` files (Do not commit real values):
+
+**Backend (`backend/.env`)**
+```
+DATABASE_URL=
+ENVIRONMENT=
+LOG_LEVEL=
+CORS_ORIGINS=
+FINNHUB_API_KEY=
+ALPHA_VANTAGE_API_KEY=
+SUPABASE_URL=
+SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
+CLERK_PUBLISHABLE_KEY=
+CLERK_SECRET_KEY=
 ```
 
-Rather than predicting the market with arbitrary percentages, STOCKSEE aggregates evidence, synthesizes market context, and provides **risk-aware decision support**.
-
----
-
-## Technical Analysis
-
-STOCKSEE computes indicators natively using Pandas directly from raw historical closes. 
-
-### Simple Moving Averages (SMA 20, 50)
-Identifies short-term and medium-term directional trends. STOCKSEE evaluates SMA crossovers to determine bullish or bearish momentum.
-
-### Relative Strength Index (RSI)
-Measures the speed and change of price movements. STOCKSEE flags RSI extensions (>70 Overbought, <30 Oversold) to identify exhaustion risk or potential bounces.
-
-### MACD (Moving Average Convergence Divergence)
-Used to assess trend momentum. STOCKSEE analyzes the MACD histogram to detect underlying momentum strengthening or weakening.
-
-### Volatility & Trend
-Calculates historical standard deviation and flags elevated risk environments when asset volatility exceeds baseline thresholds.
-
----
-
-## News & Sentiment Intelligence
-
-Sentiment alone is insufficient without market context. STOCKSEE contextualizes natural language processing alongside market data:
-
-```text
-News Sources (Finnhub API)
-   ↓
-Article Retrieval & Normalization
-   ↓
-Processing (Headline + Summary Extraction)
-   ↓
-Sentiment Analysis (VADER Polarity Scores)
-   ↓
-Market Context (Conflict Detection)
-   ↓
-Intelligence Layer
+**Frontend (`frontend/.env`)**
+```
+VITE_API_BASE_URL=
+VITE_CLERK_PUBLISHABLE_KEY=
 ```
 
-STOCKSEE flags when technicals contradict sentiment (e.g., *Trend is bullish, but recent news sentiment is negative*).
+## Contributing
 
----
+See [CONTRIBUTING.md](CONTRIBUTING.md) for development guidelines, philosophy, and pull request processes.
 
-## Decision Support
+## Security
 
-STOCKSEE moves beyond raw charts to answer: *"What does the available evidence mean?"*
-
-- **Signal Synthesis:** Generates deterministic labels like *Bullish Setup*, *Bearish Setup*, *Neutral / Wait*, or *Risk Elevated* based on strict evidence rules.
-- **Conflict Detection:** Warns users when technical momentum diverges from news sentiment.
-- **Watchlists:** Allows authenticated users to save, persist, and monitor assets of interest.
-- **Market Overview:** High-level dashboards, heatmaps, and screeners to surface actionable setups.
-
----
-
-## User Experience
-
-1. **Authenticate:** Secure login via Clerk authentication.
-2. **Explore:** Discover market intelligence via Heatmaps and Screeners.
-3. **Analyze:** Select a specific security to dive deep into Stock Detail and Analysis views.
-4. **Evaluate:** Review technical signals, company context, and recent news sentiment.
-5. **Decide:** Use the Intelligence Core's synthesized signals and risk flags to formulate a decision.
-6. **Monitor:** Save the asset to a personalized, persistent Watchlist.
-
----
-
-## Security & User Isolation
-
-STOCKSEE is built with a modern, strict authorization boundary:
-
-- **Authentication:** Handled entirely by **Clerk** (Email/Password & Social Logins).
-- **Authorization:** Handled by **FastAPI** using `PyJWT` to verify Clerk JWKS (RS256).
-- **User Isolation:** All personalized resources (Watchlists, Preferences, Portfolios) are strictly tied to the Clerk User ID.
-- **Database:** Supabase PostgreSQL is accessed via SQLAlchemy. Environment variables securely manage the `DATABASE_URL` pooling connection.
-- **CORS:** Render backend strictly enforces allowed origins matching the Vercel production URL.
-
----
-
-## Technical Architecture
-
-```text
-       React + Vite Frontend (Vercel)
-                     │
-                     ▼
-             Clerk Authentication
-                     │
-                     ▼
-         FastAPI Backend API (Render)
-                     │
-       ┌─────────────┴─────────────┐
-       ▼                           ▼
-Intelligence Services          PostgreSQL
- (Pandas, VADER)               (Supabase)
-       │
- ┌─────┼──────────┐
- ▼     ▼          ▼
-Market Data     News
-(yfinance)    (Finnhub)
-```
-
-### Stack Details
-- **Frontend:** React, TypeScript, Vite, Tailwind CSS, shadcn/ui.
-- **Backend:** Python, FastAPI, SQLAlchemy, Alembic, Pandas, VADER.
-- **Database:** Supabase PostgreSQL.
-- **Deployment:** Vercel (Frontend), Render (Backend).
-
----
-
-## Database Architecture
-
-The system utilizes 13 application tables managed via Alembic migrations.
-
-**Key Entities:**
-- **Users:** `User`, `UserPreference`, `UserPortfolio`
-- **Market & Tech:** `CompanyProfile`, `OHLCVCache`, `TechnicalIndicator`
-- **Intelligence:** `MarketDataCache`, `NewsArticle`, `SentimentScore`, `AIReport`, `SourceLog`, `ApiHealthLog`
-- **Decision:** `UserWatchlist`
-
----
-
-## API Architecture
-
-The FastAPI backend is logically grouped by functional domain:
-
-- **Authentication (`deps.py`):** JWT verification and user resolution.
-- **Market Data & Technicals (`stocks.py`):** OHLCV retrieval and indicator calculation.
-- **Intelligence (`ai.py`):** Signal generation and sentiment synthesis.
-- **Monitoring (`health.py`, `system.py`):** Liveness probes and caching metrics.
-
----
-
-## Performance & Reliability
-
-- **Aggressive Caching:** High-latency upstream requests (yfinance, Finnhub) are cached in the PostgreSQL `MarketDataCache` with distinct TTLs (e.g., 5 mins for quotes, 3 hours for news).
-- **Graceful Fallbacks:** If API keys are missing or upstream providers fail, STOCKSEE automatically degrades to stale cache data or clearly-labeled demo fallback data to ensure the platform remains functional.
-
----
-
-## Why STOCKSEE?
-
-Why does STOCKSEE exist alongside platforms like Yahoo Finance or TradingView?
-
-STOCKSEE is designed around a specific product thesis: **synthesizing fragmented market evidence into a structured decision-support experience.** 
-
-While traditional platforms provide excellent raw charting, they leave the burden of synthesis entirely on the user. STOCKSEE unifies **DATA → CONTEXT → INTELLIGENCE → DECISION** into a single cohesive pipeline.
-
----
+See [SECURITY.md](SECURITY.md) for reporting vulnerabilities.
 
 ## License
 
-This project is proprietary and confidential.
+Copyright (c) 2026 Essakki Raja T. Licensed under the [MIT License](LICENSE).
 
-*(c) 2024 Essakki Raja T. All rights reserved.*
+## Contact
+
+essakki.data@gmail.com

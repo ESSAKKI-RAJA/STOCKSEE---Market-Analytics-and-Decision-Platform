@@ -36,7 +36,10 @@ export default function CryptoDetail() {
             <p className="font-mono text-4xl font-bold text-foreground drop-shadow-md">
               ${crypto.price.toLocaleString()}
             </p>
-            <span className={`inline-flex items-center gap-1 px-3 py-1 mt-2 rounded-full text-sm font-medium border shadow-[0_0_10px_${glowColor}] ${isUp ? "bg-green-500/10 text-green-500 border-green-500/20" : "bg-red-500/10 text-red-500 border-red-500/20"}`}>
+            <span 
+              className={`inline-flex items-center gap-1 px-3 py-1 mt-2 rounded-full text-sm font-medium border shadow-sm ${isUp ? "bg-green-500/10 text-green-500 border-green-500/20" : "bg-red-500/10 text-red-500 border-red-500/20"}`}
+              style={{ boxShadow: `0 0 10px ${glowColor}` }}
+            >
               {isUp ? <TrendingUp className="w-4 h-4" /> : <TrendingDown className="w-4 h-4" />}
               {isUp ? "+" : ""}${Math.abs(crypto.change).toLocaleString()} ({isUp ? "+" : ""}{crypto.changePercent.toFixed(2)}%)
             </span>
