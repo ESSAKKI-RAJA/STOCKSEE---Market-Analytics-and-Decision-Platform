@@ -7,7 +7,9 @@ import CompanyProfileSection from "@/components/CompanyProfileSection";
 import WatchlistButton from "@/components/WatchlistButton";
 import { useStockPrices } from "@/hooks/useStockPrices";
 import { formatCurrency } from "@/lib/currency";
-import DecisionSnapshot from "@/components/DecisionSnapshot";
+import DecisionIntelligence from "@/components/analysis/DecisionIntelligence";
+import EvidencePanel from "@/components/analysis/EvidencePanel";
+import DataQualityBadge from "@/components/analysis/DataQualityBadge";
 
 const timeframes = ["1D", "1W", "1M", "3M", "1Y", "5Y", "MAX"] as const;
 const tfDays: Record<string, number> = { "1D": 1, "1W": 7, "1M": 30, "3M": 90, "1Y": 365, "5Y": 1825, "MAX": 3650 };
@@ -40,46 +42,36 @@ export default function StockDetail() {
       </div>
 
       {/* HEADER SECTION */}
-      <div className="bg-card-surface border border-border rounded-2xl p-6 relative overflow-hidden group shadow-sm">
-        <div className="absolute inset-0 bg-gradient-to-br from-blue-accent/5 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-500 pointer-events-none" />
-        
+      <div className="bg-zinc-900 border border-zinc-800 rounded p-6 relative overflow-hidden group shadow-sm">
         <div className="flex flex-col lg:flex-row justify-between items-start lg:items-center gap-6 relative z-10">
           <div className="flex items-center gap-5">
-            <div className="text-4xl drop-shadow-md w-14 h-14 bg-bg-secondary border border-border rounded-xl flex items-center justify-center shadow-inner">
+            <div className="text-4xl w-14 h-14 bg-zinc-950 border border-zinc-800 rounded flex items-center justify-center">
               {stock.flag}
             </div>
             <div>
               <div className="flex items-center gap-3 mb-1">
-                <h1 className="font-heading text-3xl font-bold text-text-primary m-0 tracking-tight">
+                <h1 className="font-heading text-3xl font-bold text-zinc-50 m-0 tracking-tight">
                   {stock.symbol}
                 </h1>
-                <span className="text-[10px] font-bold tracking-widest text-blue-accent uppercase bg-blue-accent/10 border border-blue-accent/20 px-2 py-0.5 rounded">
+                <span className="text-[10px] font-bold tracking-widest text-sky-500 uppercase font-mono">
                   {stock.exchange}
                 </span>
-                {meta?.delay_label && (
-                  <span className={`text-[10px] font-bold tracking-widest uppercase px-2 py-0.5 rounded border ${
-                    meta.delay_label.includes("LIVE") 
-                      ? "text-green-gain bg-green-gain/10 border-green-gain/20" 
-                      : "text-orange-500 bg-orange-500/10 border-orange-500/20"
-                  }`}>
-                    {meta.delay_label} {meta.source && `(${meta.source})`}
-                  </span>
-                )}
+                <DataQualityBadge source={meta?.source} delay_label={meta?.delay_label} />
               </div>
-              <div className="text-text-muted text-sm font-medium">{stock.name}</div>
+              <div className="text-muted-foreground text-sm font-medium">{stock.name}</div>
             </div>
           </div>
 
           <div className="flex items-end gap-6 w-full lg:w-auto justify-between lg:justify-end">
             <div className="text-left lg:text-right">
-              <div className="font-mono text-4xl font-bold text-text-primary leading-none mb-2">
+              <div className="font-mono text-4xl font-bold text-zinc-50 leading-none mb-2">
                 {formatCurrency(stock.price, stock.exchange)}
               </div>
               <div className="flex flex-col lg:items-end">
-                <div className={`inline-flex items-center gap-1.5 px-2.5 py-1 rounded-md font-mono text-sm font-bold border ${isUp ? "text-green-gain bg-green-gain/10 border-green-gain/20" : "text-red-loss bg-red-loss/10 border-red-loss/20"}`}>
+                <div className={`inline-flex items-center gap-1.5 font-mono text-sm font-bold ${isUp ? "text-emerald-500" : "text-rose-500"}`}>
                   {isUp ? "▲" : "▼"} {isUp ? "+" : ""}{stock.change.toFixed(2)} ({isUp ? "+" : ""}{stock.changePercent.toFixed(2)}%)
                 </div>
-                <div className="text-[10px] text-text-muted font-mono mt-1.5 uppercase tracking-wider">
+                <div className="text-[10px] text-muted-foreground font-mono mt-1.5 uppercase tracking-wider">
                   Post-Market: {formatCurrency(stock.price * (1 + (Math.random() * 0.01 - 0.005)), stock.exchange)}
                 </div>
               </div>
@@ -95,34 +87,37 @@ export default function StockDetail() {
       </div>
 
       {/* TABS */}
-      <div className="flex items-center gap-1 overflow-x-auto border-b border-border hide-scrollbar">
+      <div className="flex items-center gap-4 overflow-x-auto border-b border-zinc-800 hide-scrollbar mt-2">
         {tabs.map((tab) => (
           <button
             key={tab}
             onClick={() => setActiveTab(tab)}
-            className={`px-5 py-3 text-sm font-bold transition-all relative whitespace-nowrap ${
-              activeTab === tab ? "text-blue-accent" : "text-text-muted hover:text-text-primary hover:bg-bg-secondary/50 rounded-t-lg"
+            className={`pb-2 text-[13px] font-bold transition-all relative whitespace-nowrap ${
+              activeTab === tab ? "text-zinc-50" : "text-muted-foreground hover:text-zinc-100"
             }`}
           >
             {tab}
             {activeTab === tab && (
-              <div className="absolute bottom-0 left-0 right-0 h-0.5 bg-blue-accent shadow-[0_0_8px_rgba(37,99,255,0.8)]" />
+              <div className="absolute bottom-[-1px] left-0 right-0 h-[2px] bg-sky-500" />
             )}
           </button>
         ))}
       </div>
 
       {activeTab === "Overview" ? (
-        <div className="grid grid-cols-1 xl:grid-cols-3 gap-6">
-          <div className="xl:col-span-2">
-            <DecisionSnapshot symbol={stock.symbol} />
-            
-            <div className="bg-card-surface border border-border rounded-2xl overflow-hidden shadow-sm">
-              <div className="px-6 py-4 border-b border-border bg-bg-secondary/50 flex items-center gap-2">
-                <Info className="w-4 h-4 text-blue-accent" />
-                <span className="font-heading font-bold text-text-primary tracking-wide">Company Profile</span>
+        <div className="grid grid-cols-1 lg:grid-cols-12 gap-6">
+          <div className="lg:col-span-4 h-full">
+            <DecisionIntelligence symbol={stock.symbol} />
+          </div>
+          <div className="lg:col-span-4 h-full">
+            <EvidencePanel symbol={stock.symbol} />
+          </div>
+          <div className="lg:col-span-4">
+            <div className="stocksee-card h-full">
+              <div className="px-1 py-1 bg-zinc-950 flex items-center gap-2 mb-4">
+                <span className="font-heading font-bold text-zinc-50 tracking-wide uppercase text-[12px]">Company Profile</span>
               </div>
-              <div className="p-6">
+              <div>
                 <CompanyProfileSection
                   symbol={stock.symbol}
                   name={stock.name}
@@ -130,33 +125,24 @@ export default function StockDetail() {
                   sector={stock.sector}
                 />
               </div>
-            </div>
-          </div>
-          
-          <div className="flex flex-col gap-6">
-            {/* STATS */}
-            <div className="bg-card-surface border border-border rounded-2xl overflow-hidden shadow-sm">
-              <div className="px-6 py-4 border-b border-border bg-bg-secondary/50">
-                <span className="font-heading font-bold text-text-primary tracking-wide">Key Statistics</span>
+
+              <div className="px-1 py-1 bg-zinc-950 flex items-center gap-2 mb-4 mt-6">
+                <span className="font-heading font-bold text-zinc-50 tracking-wide uppercase text-[12px]">Key Statistics</span>
               </div>
-              <div className="p-2">
-                <table className="w-full text-left border-collapse">
-                  <tbody className="divide-y divide-border/50">
-                    {[
-                      { label: "Market Cap", value: stock.marketCap },
-                      { label: "P/E Ratio", value: stock.pe?.toFixed(2) || "—" },
-                      { label: "52W High", value: stock.high52w ? formatCurrency(stock.high52w, stock.exchange) : "—" },
-                      { label: "52W Low", value: stock.low52w ? formatCurrency(stock.low52w, stock.exchange) : "—" },
-                      { label: "Avg Volume", value: stock.volume },
-                      { label: "Sector", value: stock.sector },
-                    ].map((s) => (
-                      <tr key={s.label} className="hover:bg-blue-accent/5 transition-colors group">
-                        <td className="py-3.5 px-4 text-xs text-text-muted font-bold uppercase tracking-wider">{s.label}</td>
-                        <td className="py-3.5 px-4 text-sm text-text-primary font-mono font-bold text-right group-hover:text-blue-accent transition-colors">{s.value}</td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
+              <div className="grid grid-cols-2 gap-4">
+                {[
+                  { label: "Market Cap", value: stock.marketCap },
+                  { label: "P/E Ratio", value: stock.pe?.toFixed(2) || "—" },
+                  { label: "52W High", value: stock.high52w ? formatCurrency(stock.high52w, stock.exchange) : "—" },
+                  { label: "52W Low", value: stock.low52w ? formatCurrency(stock.low52w, stock.exchange) : "—" },
+                  { label: "Avg Volume", value: stock.volume },
+                  { label: "Sector", value: stock.sector },
+                ].map((s) => (
+                  <div key={s.label} className="flex flex-col">
+                    <span className="text-[10px] text-muted-foreground font-bold uppercase tracking-wider">{s.label}</span>
+                    <span className="text-[13px] text-zinc-50 font-mono font-bold">{s.value}</span>
+                  </div>
+                ))}
               </div>
             </div>
           </div>
@@ -227,7 +213,7 @@ export default function StockDetail() {
                   <Area
                     type="monotone"
                     dataKey="close"
-                    stroke="var(--blue-accent, #2563ff)"
+                    stroke="var(--blue-accent, #0ea5e9)"
                     strokeWidth={2}
                     fillOpacity={1}
                     fill="url(#colorClose)"

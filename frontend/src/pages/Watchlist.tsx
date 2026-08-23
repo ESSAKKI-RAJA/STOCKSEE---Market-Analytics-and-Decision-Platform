@@ -4,8 +4,8 @@ import { Star, ArrowLeft, ShieldAlert, AlertTriangle, Info, TrendingUp, Trending
 import { useAuth } from "@/contexts/AuthContext";
 import { useWatchlist } from "@/hooks/useWatchlist";
 import { useStockPrices } from "@/hooks/useStockPrices";
-import { useWatchlistMonitoring, MonitoredStock } from "@/hooks/useWatchlistMonitoring";
-import { formatCurrency } from "@/lib/currency";
+import { useWatchlistMonitoring } from "@/hooks/useWatchlistMonitoring";
+import WatchlistIntelligenceCard from "@/components/watchlist/WatchlistIntelligenceCard";
 
 export default function Watchlist() {
   const { user, loading: authLoading } = useAuth();
@@ -57,104 +57,61 @@ export default function Watchlist() {
   const changed = monitoredStocks.filter(s => s.status === "CHANGED");
   const stable = monitoredStocks.filter(s => s.status === "STABLE" || s.status === "NEW");
 
-  const renderStockCard = (item: MonitoredStock, alertColor: string, AlertIcon: any) => {
+  const renderStockCard = (item: any, _ignored: string, _ignoredIcon: any) => {
     const live = stockMap.get(item.symbol);
-    const isBullish = item.currentState.signalLabel.toLowerCase().includes("bullish");
-    const isBearish = item.currentState.signalLabel.toLowerCase().includes("bearish");
-    const isUp = (live?.change ?? 0) >= 0;
-
-    let SignalIcon = Activity;
-    if (isBullish) SignalIcon = TrendingUp;
-    if (isBearish) SignalIcon = TrendingDown;
-
     return (
-      <Link key={item.symbol} to={`/stock/${item.symbol}`} className="block bg-bg-secondary/50 border border-border rounded-xl p-5 hover:bg-card-surface hover:border-blue-accent/50 transition-all group">
-        <div className="flex justify-between items-start mb-4">
-          <div className="flex items-center gap-3">
-             <div className="w-10 h-10 rounded-lg bg-card-surface border border-border flex items-center justify-center font-bold text-text-primary group-hover:text-blue-accent transition-colors shadow-sm">
-                {item.symbol[0]}
-             </div>
-             <div>
-               <h3 className="font-heading font-bold text-lg text-text-primary group-hover:text-blue-accent transition-colors leading-none">{item.symbol}</h3>
-               {live && (
-                 <div className="flex items-center gap-2 mt-1.5">
-                   <span className="font-mono text-sm text-text-primary font-bold">{formatCurrency(live.price, live.exchange)}</span>
-                   <span className={`font-mono text-xs font-bold ${isUp ? "text-green-gain" : "text-red-loss"}`}>
-                     {isUp ? "▲" : "▼"}{Math.abs(live.changePercent).toFixed(2)}%
-                   </span>
-                 </div>
-               )}
-             </div>
-          </div>
-          <div className={`flex items-center gap-1.5 px-2.5 py-1 rounded-md text-[10px] font-bold uppercase tracking-widest border ${
-             isBullish ? "text-green-gain bg-green-gain/10 border-green-gain/20" : 
-             isBearish ? "text-red-loss bg-red-loss/10 border-red-loss/20" : 
-             "text-text-primary bg-bg-secondary border-border"
-          }`}>
-             <SignalIcon size={12} />
-             {item.currentState.signalLabel}
-          </div>
-        </div>
-
-        {item.changeExplanation && (
-          <div className={`mt-3 p-3 rounded-lg border flex items-start gap-2 ${alertColor}`}>
-            <AlertIcon size={16} className="mt-0.5 shrink-0" />
-            <div>
-              <div className="text-xs font-bold uppercase tracking-wider mb-0.5">Material Change Detected</div>
-              <div className="text-sm font-medium">{item.changeExplanation}</div>
-            </div>
-          </div>
-        )}
-        
-        <div className="mt-4 flex gap-4 text-xs font-mono font-bold uppercase tracking-wider">
-           <div className="text-text-muted">
-              Conf: <span className="text-text-primary">{item.currentState.confidence}</span>
-           </div>
-           <div className="text-text-muted">
-              Risk: <span className={item.currentState.riskLevel !== "LOW" ? "text-orange-500" : "text-text-primary"}>{item.currentState.riskLevel}</span>
-           </div>
-        </div>
-      </Link>
+      <WatchlistIntelligenceCard
+        key={item.symbol}
+        symbol={item.symbol}
+        price={live?.price}
+        changePercent={live?.changePercent}
+        exchange={live?.exchange}
+        signalLabel={item.currentState.signalLabel}
+        confidence={item.currentState.confidence}
+        riskLevel={item.currentState.riskLevel}
+        changeExplanation={item.changeExplanation}
+        status={item.status as any}
+      />
     );
   };
 
   return (
     <div className="flex flex-col gap-6 pb-12 w-full animate-fade-in-up">
-      <div className="flex items-center justify-between pb-2 border-b border-border">
+      <div className="flex items-center justify-between pb-2 border-b border-zinc-800">
         <div>
-          <h1 className="text-3xl font-heading font-bold text-text-primary tracking-tight mb-2 flex items-center gap-3">
+          <h1 className="text-2xl font-heading font-bold text-zinc-50 tracking-tight mb-2 flex items-center gap-3">
             Decision Monitoring
-            <Activity className="text-blue-accent w-7 h-7" />
+            <Activity className="text-sky-500 w-6 h-6" />
           </h1>
-          <div className="flex items-center gap-2 text-text-muted text-sm uppercase tracking-wider text-[11px] font-bold">
-            <Link to="/" className="hover:text-blue-accent transition-colors flex items-center gap-1">
-              <ArrowLeft size={14} /> Dashboard
+          <div className="flex items-center gap-2 text-muted-foreground text-sm uppercase tracking-wider text-[11px] font-bold">
+            <Link to="/" className="hover:text-sky-500 transition-colors flex items-center gap-1">
+              <ArrowLeft size={14} /> Command Center
             </Link>
             <span>/</span>
-            <span className="text-text-primary">Watchlists</span>
+            <span className="text-zinc-50">Intelligence Feed</span>
           </div>
         </div>
-        <button className="bg-blue-accent hover:bg-blue-accent/90 text-white px-4 py-2.5 rounded-xl font-bold shadow-[0_4px_14px_rgba(37,99,255,0.3)] transition-all flex items-center gap-2">
-          <Plus size={18} /> New List
+        <button className="bg-zinc-100 hover:bg-zinc-200 text-zinc-950 px-4 py-2 rounded font-bold transition-all flex items-center gap-2 text-[13px]">
+          <Plus size={16} /> New List
         </button>
       </div>
 
       <div className="flex items-center justify-between">
-        <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar bg-bg-secondary p-1.5 rounded-xl border border-border">
+        <div className="flex items-center gap-2 overflow-x-auto hide-scrollbar bg-zinc-950 p-1.5 rounded border border-zinc-800">
           {lists.map((list) => (
             <button
               key={list}
               onClick={() => setActiveList(list)}
-              className={`px-4 py-2 text-xs font-bold transition-all rounded-lg whitespace-nowrap ${
-                activeList === list ? "bg-card-surface text-text-primary shadow-sm" : "text-text-muted hover:text-text-primary"
+              className={`px-4 py-1.5 text-[12px] font-bold transition-all rounded whitespace-nowrap ${
+                activeList === list ? "bg-zinc-900 text-zinc-50 border border-zinc-800" : "text-muted-foreground hover:text-zinc-50 border border-transparent"
               }`}
             >
               {list}
             </button>
           ))}
         </div>
-        <button className="text-text-muted hover:text-text-primary p-2 bg-bg-secondary rounded-lg border border-border transition-colors">
-          <Settings size={18} />
+        <button className="text-muted-foreground hover:text-zinc-50 p-2 bg-zinc-950 rounded border border-zinc-800 transition-colors">
+          <Settings size={16} />
         </button>
       </div>
 
@@ -200,22 +157,22 @@ export default function Watchlist() {
 
           {stable.length > 0 && (
             <section>
-              <h2 className="text-sm font-bold text-text-muted uppercase tracking-widest mb-4 flex items-center gap-2 border-b border-border pb-2">
+              <h2 className="text-[11px] font-bold text-muted-foreground uppercase tracking-widest mb-4 flex items-center gap-2 border-b border-zinc-800 pb-2">
                 Stable
               </h2>
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-4 opacity-80 hover:opacity-100 transition-opacity">
                 {stable.map(stock => (
-                  <Link key={stock.symbol} to={`/stock/${stock.symbol}`} className="bg-card-surface border border-border rounded-xl p-4 flex items-center justify-between hover:border-blue-accent/50 transition-colors group">
+                  <Link key={stock.symbol} to={`/stock/${stock.symbol}`} className="bg-zinc-900 border border-zinc-800 rounded p-4 flex items-center justify-between hover:border-sky-500/50 transition-colors group">
                     <div className="flex items-center gap-3">
-                      <div className="w-8 h-8 rounded bg-bg-secondary border border-border flex items-center justify-center font-bold text-xs text-text-primary">
+                      <div className="w-8 h-8 rounded bg-zinc-950 border border-zinc-800 flex items-center justify-center font-bold text-xs text-zinc-50">
                         {stock.symbol[0]}
                       </div>
                       <div>
-                        <div className="font-heading font-bold text-text-primary text-sm group-hover:text-blue-accent transition-colors leading-none">{stock.symbol}</div>
-                        <div className="text-[10px] text-text-muted uppercase tracking-wider mt-1">{stock.currentState.signalLabel}</div>
+                        <div className="font-heading font-bold text-zinc-50 text-[13px] group-hover:text-sky-500 transition-colors leading-none">{stock.symbol}</div>
+                        <div className="text-[10px] text-muted-foreground uppercase tracking-wider mt-1">{stock.currentState.signalLabel}</div>
                       </div>
                     </div>
-                    <ChevronRight size={16} className="text-text-muted group-hover:text-blue-accent transition-colors" />
+                    <ChevronRight size={16} className="text-zinc-600 group-hover:text-sky-500 transition-colors" />
                   </Link>
                 ))}
               </div>

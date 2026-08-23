@@ -1,23 +1,30 @@
-"""Market data service — fetches quotes and history from yfinance.
+"""Market data service — Orchestrates market data fetch across multiple providers.
 
 Returns structured dicts with a `_meta` key containing mode/source info
 so the API layer can propagate transparency to the frontend.
 """
 
-import yfinance as yf
-import pandas as pd
 from typing import Dict, Any, List
 from datetime import datetime, timezone
 import logging
 import time
 
 from app.services.cache_service import get_cached_payload, set_cached_payload, get_stale_cache, log_source_event
+from app.services.providers import AlphaVantageProvider, FinnhubProvider, YFinanceProvider, DemoProvider
 
 logger = logging.getLogger(__name__)
 
+# Instantiate providers in fallback order
+_PROVIDERS = [
+    AlphaVantageProvider(),
+    FinnhubProvider(),
+    YFinanceProvider(),
+]
+_DEMO_PROVIDER = DemoProvider()
+
 
 def get_market_quote(symbol: str) -> Dict[str, Any]:
-    """Fetch live quote via yfinance. Falls back to stale cache or demo data on error."""
+    """Fetch live quote via provider hierarchy. Falls back to stale cache or demo data on error."""
     # 1. Try valid cache
     cached = get_cached_payload(symbol, "quote")
     if cached:
@@ -25,141 +32,116 @@ def get_market_quote(symbol: str) -> Dict[str, Any]:
         return cached
 
     start_time = time.time()
-    try:
-        ticker = yf.Ticker(symbol)
-        info = ticker.fast_info
+    
+    # 2. Try primary/secondary providers
+    for provider in _PROVIDERS:
+        try:
+            payload = provider.get_quote(symbol)
+            if payload:
+                # Add metadata
+                payload["_meta"] = {
+                    "mode": provider.mode,
+                    "source": provider.name,
+                    "generated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+                }
+                
+                latency = int((time.time() - start_time) * 1000)
+                log_source_event(symbol, "quote", provider.name, provider.mode, True, latency)
 
-        price = float(info.get("lastPrice", 0.0) or 0.0)
-        prev_close = float(info.get("previousClose", 0.0) or 0.0)
+                # Save to cache (TTL: 5 mins)
+                set_cached_payload(symbol, "quote", payload, provider.mode, provider.name, 5)
+                
+                return payload
+        except Exception as e:
+            logger.warning(f"Provider {provider.name} failed to fetch quote for {symbol}: {e}")
+            # Continue to next provider
 
-        if price <= 0:
-            raise ValueError(f"Invalid price {price} for {symbol}")
-
-        payload = {
-            "symbol": symbol,
-            "price": round(price, 2),
-            "previous_close": round(prev_close, 2),
-            "volume": int(info.get("lastVolume", 0) or 0),
-            "market_cap": float(info.get("marketCap", 0.0) or 0.0),
-            "success": True,
-            "source": "yfinance",
-            "delay_label": "~15 min delay",
-            "_meta": {
-                "mode": "real",
-                "source": "yfinance",
-                "generated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
-            },
-        }
-
+    # 3. Fallback to stale cache if real data fails
+    stale = get_stale_cache(symbol, "quote")
+    if stale:
         latency = int((time.time() - start_time) * 1000)
-        log_source_event(symbol, "quote", "yfinance", "real", True, latency)
+        log_source_event(symbol, "quote", "stale_cache", "fallback", False, latency, "All real providers failed")
+        stale["_meta"]["mode"] = "stale_cache"
+        stale["_meta"]["cache_hit"] = True
+        return stale
 
-        # Save to cache (TTL: 5 mins)
-        set_cached_payload(symbol, "quote", payload, "real", "yfinance", 5)
-
-        return payload
-
-    except Exception as e:
-        latency = int((time.time() - start_time) * 1000)
-        logger.warning(f"Failed to fetch quote for {symbol}: {e}")
-        log_source_event(symbol, "quote", "yfinance", "fallback", False, latency, str(e))
-
-        stale = get_stale_cache(symbol, "quote")
-        if stale:
-            stale["_meta"]["mode"] = "stale_cache"
-            stale["_meta"]["cache_hit"] = True
-            return stale
-
-        return _get_demo_quote(symbol)
+    # 4. Ultimate fallback to demo data
+    latency = int((time.time() - start_time) * 1000)
+    log_source_event(symbol, "quote", "demo", "fallback", False, latency, "All real providers and cache failed")
+    
+    demo_payload = _DEMO_PROVIDER.get_quote(symbol)
+    demo_payload["_meta"] = {
+        "mode": _DEMO_PROVIDER.mode,
+        "source": _DEMO_PROVIDER.name,
+        "generated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+    }
+    return demo_payload
 
 
 def get_market_history(symbol: str, period: str = "1mo") -> Dict[str, Any]:
-    """Fetch historical OHLCV via yfinance. Returns dict with rows + _meta."""
+    """Fetch historical OHLCV via provider hierarchy. Returns dict with rows + _meta."""
     cached = get_cached_payload(symbol, "history")
     if cached:
         cached["_meta"]["cache_hit"] = True
         return cached
 
     start_time = time.time()
-    try:
-        ticker = yf.Ticker(symbol)
-        df = ticker.history(period=period)
-        if df.empty:
-            raise ValueError("Empty data returned")
+    
+    for provider in _PROVIDERS:
+        try:
+            payload = provider.get_history(symbol, period)
+            if payload and "rows" in payload and len(payload["rows"]) > 0:
+                payload["_meta"] = {
+                    "mode": provider.mode,
+                    "source": provider.name,
+                    "data_points": len(payload["rows"]),
+                    "generated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+                }
+                
+                latency = int((time.time() - start_time) * 1000)
+                log_source_event(symbol, "history", provider.name, provider.mode, True, latency)
 
-        rows: List[Dict[str, Any]] = []
-        for date, row in df.iterrows():
-            rows.append({
-                "date": date.strftime("%Y-%m-%d"),
-                "open": round(float(row.get("Open", 0.0)), 2),
-                "high": round(float(row.get("High", 0.0)), 2),
-                "low": round(float(row.get("Low", 0.0)), 2),
-                "close": round(float(row.get("Close", 0.0)), 2),
-                "volume": int(row.get("Volume", 0)),
-                "adjusted_close": round(float(row.get("Close", 0.0)), 2),
-            })
+                # Cache history (TTL: 6 hours)
+                set_cached_payload(symbol, "history", payload, provider.mode, provider.name, 360)
+                return payload
+        except Exception as e:
+            logger.warning(f"Provider {provider.name} failed to fetch history for {symbol}: {e}")
+            # Continue to next provider
 
-        payload = {
-            "rows": rows,
-            "_meta": {
-                "mode": "real",
-                "source": "yfinance",
-                "data_points": len(rows),
-                "generated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
-            },
-        }
-
+    stale = get_stale_cache(symbol, "history")
+    if stale:
         latency = int((time.time() - start_time) * 1000)
-        log_source_event(symbol, "history", "yfinance", "real", True, latency)
+        log_source_event(symbol, "history", "stale_cache", "fallback", False, latency, "All real providers failed")
+        stale["_meta"]["mode"] = "stale_cache"
+        stale["_meta"]["cache_hit"] = True
+        return stale
 
-        # Cache history (TTL: 6 hours)
-        set_cached_payload(symbol, "history", payload, "real", "yfinance", 360)
-        return payload
-    except Exception as e:
-        latency = int((time.time() - start_time) * 1000)
-        logger.warning(f"Failed to fetch history for {symbol}: {e}")
-        log_source_event(symbol, "history", "yfinance", "fallback", False, latency, str(e))
-
-        stale = get_stale_cache(symbol, "history")
-        if stale:
-            stale["_meta"]["mode"] = "stale_cache"
-            stale["_meta"]["cache_hit"] = True
-            return stale
-
-        return _get_demo_history(symbol)
-
-
-# ─── Demo fallbacks ────────────────────────────────────────────
-
-def _get_demo_quote(symbol: str) -> Dict[str, Any]:
-    return {
-        "symbol": symbol,
-        "price": 150.00,
-        "previous_close": 148.50,
-        "volume": 1000000,
-        "market_cap": 2500000000,
-        "success": False,
-        "source": "demo",
-        "delay_label": "Demo / EOD",
-        "_meta": {
-            "mode": "demo",
-            "source": "demo",
-            "generated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
-        },
+    latency = int((time.time() - start_time) * 1000)
+    log_source_event(symbol, "history", "demo", "fallback", False, latency, "All real providers and cache failed")
+    
+    demo_payload = _DEMO_PROVIDER.get_history(symbol, period)
+    demo_payload["_meta"] = {
+        "mode": _DEMO_PROVIDER.mode,
+        "source": _DEMO_PROVIDER.name,
+        "data_points": len(demo_payload.get("rows", [])),
+        "generated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
     }
+    return demo_payload
 
-
-def _get_demo_history(symbol: str) -> Dict[str, Any]:
+def get_provider_status() -> Dict[str, Any]:
+    """Returns the ordered fallback hierarchy of providers."""
+    providers = []
+    for p in _PROVIDERS:
+        providers.append({
+            "name": p.name,
+            "mode": p.mode
+        })
+    providers.append({
+        "name": _DEMO_PROVIDER.name,
+        "mode": _DEMO_PROVIDER.mode
+    })
+    
     return {
-        "rows": [
-            {"date": "2024-01-01", "open": 140, "high": 145, "low": 139, "close": 144, "volume": 10000, "adjusted_close": 144},
-            {"date": "2024-01-02", "open": 144, "high": 150, "low": 142, "close": 148, "volume": 12000, "adjusted_close": 148},
-            {"date": "2024-01-03", "open": 148, "high": 152, "low": 147, "close": 150, "volume": 15000, "adjusted_close": 150},
-        ],
-        "_meta": {
-            "mode": "demo",
-            "source": "demo",
-            "data_points": 3,
-            "generated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
-        },
+        "hierarchy": providers,
+        "primary": providers[0]["name"] if providers else "demo"
     }

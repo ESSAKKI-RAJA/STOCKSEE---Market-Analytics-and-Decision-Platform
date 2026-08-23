@@ -15,70 +15,70 @@ export default {
     extend: {
       fontFamily: {
         sans: ["Inter", "sans-serif"],
-        heading: ["Inter", "sans-serif"], // Clean institutional heading
+        heading: ["Inter", "sans-serif"],
         body: ["Inter", "sans-serif"],
         mono: ["'JetBrains Mono'", "monospace"],
         display: ["Inter", "sans-serif"],
       },
       colors: {
-        border: "#27272A",
-        input: "#27272A",
-        ring: "#2563EB",
-        background: "#000000",
-        foreground: "#FAFAFA",
-        surface: "#121212",
-        "bg-secondary": "#0A0A0A",
+        border: "hsl(var(--border))",
+        input: "hsl(var(--input))",
+        ring: "hsl(var(--ring))",
+        background: "hsl(var(--background))",
+        foreground: "hsl(var(--foreground))",
+        surface: "#1e1f26",
+        "bg-secondary": "#0d0e15",
         
-        "blue-accent": "#2563EB",
-        "purple-accent": "#7C3AED",
-        "green-gain": "#10B981",
-        "red-loss": "#EF4444",
-        "gold-premium": "#F59E0B",
+        "blue-accent": "#0ea5e9",
+        "purple-accent": "#c8c6c8",
+        "green-gain": "#10b981",
+        "red-loss": "#f43f5e",
+        "gold-premium": "#f59e0b",
         
         primary: {
-          DEFAULT: "#2563EB",
-          foreground: "#FAFAFA",
+          DEFAULT: "hsl(var(--primary))",
+          foreground: "hsl(var(--primary-foreground))",
         },
         secondary: {
-          DEFAULT: "#0A0A0A",
-          foreground: "#A1A1AA",
+          DEFAULT: "hsl(var(--secondary))",
+          foreground: "hsl(var(--secondary-foreground))",
         },
         destructive: {
-          DEFAULT: "#EF4444",
-          foreground: "#FAFAFA",
+          DEFAULT: "hsl(var(--destructive))",
+          foreground: "hsl(var(--destructive-foreground))",
         },
         muted: {
-          DEFAULT: "#0A0A0A",
-          foreground: "#71717A",
+          DEFAULT: "hsl(var(--muted))",
+          foreground: "hsl(var(--muted-foreground))",
         },
         accent: {
-          DEFAULT: "#2563EB",
-          foreground: "#FAFAFA",
-          hover: "#3B82F6",
+          DEFAULT: "hsl(var(--accent))",
+          foreground: "hsl(var(--accent-foreground))",
+          hover: "#27272a",
         },
         popover: {
-          DEFAULT: "#121212",
-          foreground: "#FAFAFA",
+          DEFAULT: "hsl(var(--popover))",
+          foreground: "hsl(var(--popover-foreground))",
         },
         card: {
-          DEFAULT: "#121212",
-          foreground: "#FAFAFA",
+          DEFAULT: "hsl(var(--card))",
+          foreground: "hsl(var(--card-foreground))",
         },
         sidebar: {
-          DEFAULT: "#000000",
-          foreground: "#A1A1AA",
-          primary: "#2563EB",
-          "primary-foreground": "#FAFAFA",
-          accent: "#121212",
-          "accent-foreground": "#FAFAFA",
-          border: "#27272A",
-          ring: "#2563EB",
+          DEFAULT: "hsl(var(--background))",
+          foreground: "hsl(var(--muted-foreground))",
+          primary: "hsl(var(--primary))",
+          "primary-foreground": "hsl(var(--primary-foreground))",
+          accent: "hsl(var(--accent))",
+          "accent-foreground": "hsl(var(--accent-foreground))",
+          border: "hsl(var(--border))",
+          ring: "hsl(var(--ring))",
         },
       },
       borderRadius: {
-        lg: "0.5rem", // 8px for sharper institutional feel
-        md: "0.375rem", // 6px
-        sm: "0.25rem", // 4px
+        lg: "0.25rem", // 4px sharper corners for institutional feel
+        md: "0.25rem",
+        sm: "0.125rem", // 2px
       },
       keyframes: {
         "accordion-down": {

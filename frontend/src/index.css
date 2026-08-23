@@ -7,83 +7,82 @@
 @layer base {
   :root {
     /* 
-      STOCKSEE V4 Design Language 
-      Minimal, Professional, Institutional, Premium
+      STOCKSEE Stitch Design Language - Institutional Rigor 
     */
-    --bg-primary: #000000;
-    --bg-secondary: #0A0A0A;
-    --card-surface: #121212;
-    --border-color: #27272A;
+    --bg-primary: #09090b; /* Slate-950 */
+    --bg-secondary: #0d0e15; /* surface-container-lowest */
+    --card-surface: #1e1f26; /* surface-container */
+    --border-color: #27272A; /* Zinc-800 */
     
-    --text-primary: #FAFAFA;
-    --text-secondary: #A1A1AA;
-    --text-muted: #71717A;
+    --text-primary: #FAFAFA; /* Zinc-50 */
+    --text-secondary: #e3e1ec; /* on-surface */
+    --text-muted: #71717A; /* Zinc-500 */
     
     /* Institutional Accent Colors */
-    --blue-accent: #2563EB;
-    --blue-hover: #3B82F6;
-    --blue-muted: rgba(37, 99, 235, 0.15);
+    --blue-accent: #0ea5e9; /* Sky-500 */
+    --blue-hover: #0284c7; /* Sky-600 */
+    --blue-muted: rgba(14, 165, 233, 0.15);
     
-    --purple-accent: #7C3AED;
-    --green-gain: #10B981;
+    --purple-accent: #c8c6c8;
+    --green-gain: #10b981; /* Emerald-500 */
     --green-muted: rgba(16, 185, 129, 0.15);
-    --red-loss: #EF4444;
-    --red-muted: rgba(239, 68, 68, 0.15);
-    --gold-premium: #F59E0B;
+    --red-loss: #f43f5e; /* Rose-500 */
+    --red-muted: rgba(244, 63, 94, 0.15);
+    --gold-premium: #f59e0b; /* Amber-500 */
 
     /* Shadcn mapping */
-    --background: 0 0% 0%; /* #000000 */
+    --background: 240 10% 4%; /* #09090b */
     --foreground: 0 0% 98%; /* #FAFAFA */
     
-    --card: 0 0% 7%; /* #121212 */
+    --card: 232 12% 13%; /* #1e1f26 */
     --card-foreground: 0 0% 98%;
     
-    --popover: 0 0% 7%;
+    --popover: 232 12% 13%;
     --popover-foreground: 0 0% 98%;
     
-    --primary: 221 83% 53%; /* #2563EB */
-    --primary-foreground: 0 0% 98%;
+    --primary: 0 0% 98%; /* Zinc-50 */
+    --primary-foreground: 240 10% 4%; /* Slate-950 */
     
-    --secondary: 0 0% 4%; /* #0A0A0A */
+    --secondary: 240 5% 9%; /* Zinc-900 */
     --secondary-foreground: 0 0% 98%;
     
-    --muted: 0 0% 4%;
+    --muted: 240 5% 9%;
     --muted-foreground: 240 5% 65%; /* #A1A1AA */
     
-    --accent: 262 83% 58%; /* #7C3AED */
+    --accent: 240 5% 9%;
     --accent-foreground: 0 0% 98%;
     
-    --destructive: 0 84% 60%; /* #EF4444 */
+    --destructive: 343 89% 60%; /* #f43f5e */
     --destructive-foreground: 0 0% 98%;
     
     --border: 240 6% 16%; /* #27272A */
     --input: 240 6% 16%;
-    --ring: 221 83% 53%;
+    --ring: 0 0% 98%;
     
-    --radius: 0.5rem; /* 8px sharper corners for institutional feel */
+    --radius: 0.25rem; /* 4px sharp corners for institutional feel */
   }
 
   .dark {
     /* Hardcode dark mode mappings */
-    --background: 0 0% 0%;
+    --background: 240 10% 4%;
     --foreground: 0 0% 98%;
-    --card: 0 0% 7%;
+    --card: 232 12% 13%;
     --card-foreground: 0 0% 98%;
-    --popover: 0 0% 7%;
+    --popover: 232 12% 13%;
     --popover-foreground: 0 0% 98%;
-    --primary: 221 83% 53%;
-    --primary-foreground: 0 0% 98%;
-    --secondary: 0 0% 4%;
+    --primary: 0 0% 98%;
+    --primary-foreground: 240 10% 4%;
+    --secondary: 240 5% 9%;
     --secondary-foreground: 0 0% 98%;
-    --muted: 0 0% 4%;
+    --muted: 240 5% 9%;
     --muted-foreground: 240 5% 65%;
-    --accent: 262 83% 58%;
+    --accent: 240 5% 9%;
     --accent-foreground: 0 0% 98%;
-    --destructive: 0 84% 60%;
+    --destructive: 343 89% 60%;
     --destructive-foreground: 0 0% 98%;
     --border: 240 6% 16%;
     --input: 240 6% 16%;
-    --ring: 221 83% 53%;
+    --ring: 0 0% 98%;
   }
 
   * { @apply border-border box-border; }
@@ -155,10 +154,10 @@
 
   /* Core UI elements */
   .stocksee-card {
-    @apply bg-[#121212] border border-[#27272A] rounded-lg p-5;
+    @apply bg-[var(--card-surface)] border border-border rounded-[var(--radius)] p-5;
   }
   .stocksee-card-header {
-    @apply text-xs font-semibold uppercase tracking-wider text-[#A1A1AA] mb-4;
+    @apply text-[11px] font-bold uppercase tracking-wider text-muted-foreground mb-4;
   }
   .stocksee-data-row {
     @apply flex justify-between items-center py-2 border-b border-[#27272A]/50 last:border-0;
@@ -243,10 +242,10 @@
   .bg-down { background: var(--red-muted); color: var(--red-loss); }
 
   .btn-primary, .t-btn-primary {
-    @apply bg-blue-600 hover:bg-blue-700 text-white border-0 font-medium px-4 py-2 rounded-md transition-colors text-sm;
+    @apply bg-zinc-100 hover:bg-zinc-200 text-zinc-950 border-0 font-medium px-4 py-2 rounded transition-colors text-sm;
   }
   .btn-secondary, .t-btn {
-    @apply bg-[#121212] hover:bg-[#1A1A1D] border border-[#27272A] text-white font-medium px-4 py-2 rounded-md transition-colors text-sm;
+    @apply bg-transparent hover:bg-zinc-900 border border-zinc-800 text-zinc-100 font-medium px-4 py-2 rounded transition-colors text-sm;
   }
   
   .section-heading { font-weight: 500; font-size: 1.25rem; color: var(--text-primary); }
