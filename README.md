@@ -1,13 +1,15 @@
-# STOCKSEE
+<p align="center">
+  <img src="assets/stocksee-banner.jpg" alt="STOCKSEE Banner" width="100%">
+</p>
 
-**Don't Predict the Market. Understand It.**
-
-[![Backend](https://img.shields.io/badge/Backend-FastAPI%20%7C%20Python%203.12-009688?style=flat-square&logo=fastapi)](https://fastapi.tiangolo.com)
-[![Frontend](https://img.shields.io/badge/Frontend-React%2018%20%7C%20TypeScript-3178C6?style=flat-square&logo=react)](https://react.dev)
-[![Database](https://img.shields.io/badge/Database-PostgreSQL%20%7C%20Supabase-3ECF8E?style=flat-square&logo=supabase)](https://supabase.com)
-[![Deploy Frontend](https://img.shields.io/badge/Frontend-Vercel-000000?style=flat-square&logo=vercel)](https://vercel.com)
-[![Deploy Backend](https://img.shields.io/badge/Backend-Render-46E3B7?style=flat-square&logo=render)](https://render.com)
-[![License](https://img.shields.io/badge/License-MIT-blue?style=flat-square)](LICENSE)
+<p align="center">
+  <a href="https://fastapi.tiangolo.com"><img src="https://img.shields.io/badge/Backend-FastAPI%20%7C%20Python%203.12-009688?style=flat-square&logo=fastapi" alt="Backend"></a>
+  <a href="https://react.dev"><img src="https://img.shields.io/badge/Frontend-React%2018%20%7C%20TypeScript-3178C6?style=flat-square&logo=react" alt="Frontend"></a>
+  <a href="https://supabase.com"><img src="https://img.shields.io/badge/Database-PostgreSQL%20%7C%20Supabase-3ECF8E?style=flat-square&logo=supabase" alt="Database"></a>
+  <a href="https://vercel.com"><img src="https://img.shields.io/badge/Frontend-Vercel-000000?style=flat-square&logo=vercel" alt="Deploy Frontend"></a>
+  <a href="https://render.com"><img src="https://img.shields.io/badge/Backend-Render-46E3B7?style=flat-square&logo=render" alt="Deploy Backend"></a>
+  <a href="LICENSE"><img src="https://img.shields.io/badge/License-MIT-blue?style=flat-square" alt="License"></a>
+</p>
 
 ---
 
