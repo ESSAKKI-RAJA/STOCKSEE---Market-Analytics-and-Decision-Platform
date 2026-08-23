@@ -23,8 +23,8 @@ export default function CompanyProfileSection({ symbol, name, exchange, sector, 
 
   if (error || !data) {
     return (
-      <div className="text-[var(--text-muted)] font-mono text-xs font-semibold bg-[rgba(59,130,246,0.05)] border border-[rgba(59,130,246,0.1)] rounded-lg p-3 inline-block">
-        Live Profile Data Ready
+      <div className="text-[var(--text-muted)] font-mono text-xs font-semibold bg-[rgba(59,130,246,0.05)] border border-[rgba(59,130,246,0.1)] rounded-lg p-4 inline-block">
+        Company information unavailable from configured sources.
       </div>
     );
   }

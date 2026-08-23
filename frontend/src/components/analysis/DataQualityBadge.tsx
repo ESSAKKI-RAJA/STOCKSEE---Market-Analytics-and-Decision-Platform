@@ -6,8 +6,9 @@ interface DataQualityBadgeProps {
 export default function DataQualityBadge({ source, delay_label }: DataQualityBadgeProps) {
   if (!delay_label) return null;
 
-  const isLive = delay_label.includes("LIVE");
-  const isDemo = source === "demo";
+  const upper = delay_label.toUpperCase();
+  const isLive = upper.includes("LIVE") || upper.includes("REAL-TIME") || upper.includes("REALTIME");
+  const isDemo = source?.toLowerCase() === "demo" || upper.includes("DEMO");
 
   if (isDemo) {
     return (

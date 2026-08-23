@@ -94,16 +94,16 @@ export default function CommandSearch({ isOpen, onClose }: CommandSearchProps) {
                       <div className="text-[11px] text-zinc-500 truncate">Highest volatility today</div>
                     </div>
                   </button>
-                  <button className="flex items-center gap-3 p-3 bg-zinc-950 border border-zinc-800 rounded hover:border-sky-500/50 hover:bg-zinc-900 transition-all text-left group sm:col-span-2">
-                    <div className="w-8 h-8 rounded bg-zinc-800 text-zinc-300 flex items-center justify-center group-hover:bg-zinc-700 transition-colors shrink-0">
-                      <Bell className="w-4 h-4" />
+                  <button onClick={() => handleNavigate("/watchlist")} className="flex items-center gap-3 p-3 bg-zinc-950 border border-zinc-800 rounded hover:border-sky-500/50 hover:bg-zinc-900 transition-all text-left group sm:col-span-2">
+                    <div className="w-8 h-8 rounded bg-amber-500/10 text-amber-400 flex items-center justify-center group-hover:bg-amber-500 group-hover:text-zinc-950 transition-colors shrink-0">
+                      <Star className="w-4 h-4" />
                     </div>
                     <div className="min-w-0 flex-1 flex justify-between items-center">
                       <div>
-                        <div className="font-heading font-bold text-sm text-zinc-50 truncate">Open Alerts Console</div>
-                        <div className="text-[11px] text-zinc-500 truncate">Manage active triggers</div>
+                        <div className="font-heading font-bold text-sm text-zinc-50 truncate">Watchlist & Favorites</div>
+                        <div className="text-[11px] text-zinc-500 truncate">Manage tracked assets and portfolio targets</div>
                       </div>
-                      <span className="text-[10px] bg-zinc-800 text-zinc-300 px-2 py-0.5 rounded">Coming Soon</span>
+                      <span className="text-[10px] bg-sky-500/10 text-sky-400 border border-sky-500/20 px-2 py-0.5 rounded font-mono font-bold">VIEW</span>
                     </div>
                   </button>
                 </div>

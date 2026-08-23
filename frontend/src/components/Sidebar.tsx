@@ -1,20 +1,12 @@
 import { Link, useLocation } from "react-router-dom";
 import {
-  X, BarChart3, LayoutGrid, Activity, Star, Briefcase,
-  Zap, Newspaper, Map, Filter, BookOpen, Settings,
+  X, BarChart3, LayoutGrid, Activity, Star
 } from "lucide-react";
 
 const NAV = [
   { path: "/",          label: "Dashboard",    icon: LayoutGrid },
   { path: "/analyse",   label: "Analyse",      icon: Activity },
   { path: "/watchlist", label: "Watchlist",    icon: Star },
-
-  { path: "/alerts",    label: "Alerts",       icon: Zap },
-  { path: "/news",      label: "News Center",  icon: Newspaper },
-  { path: "/heatmaps",  label: "Heatmaps",     icon: Map },
-  { path: "/screener",  label: "Screener Pro", icon: Filter },
-  { path: "/academy",   label: "Academy",      icon: BookOpen },
-  { path: "/settings",  label: "Settings",     icon: Settings },
 ];
 
 interface SidebarProps {

@@ -62,20 +62,28 @@ class FinnhubProvider(MarketDataProvider):
             
         clean_symbol = self._get_clean_symbol(symbol)
         
-        # Map yfinance period to timestamps
-        # 1mo -> past 30 days
-        # Finnhub resolution 'D' = daily
+        # Map period to timestamps
         import time
         now = int(time.time())
-        if period == "1mo":
-            start = now - (30 * 24 * 60 * 60)
-        elif period == "3mo":
-            start = now - (90 * 24 * 60 * 60)
-        elif period == "1y":
-            start = now - (365 * 24 * 60 * 60)
-        else:
-            # Default to 1mo
-            start = now - (30 * 24 * 60 * 60)
+        period_days = {
+            "1d": 1,
+            "1w": 7,
+            "1wk": 7,
+            "5d": 7,
+            "1m": 30,
+            "1mo": 30,
+            "3m": 90,
+            "3mo": 90,
+            "6m": 180,
+            "6mo": 180,
+            "1y": 365,
+            "2y": 730,
+            "3y": 1095,
+            "5y": 1825,
+            "max": 3650,
+        }
+        days = period_days.get(period.lower(), 30)
+        start = now - (days * 24 * 60 * 60)
 
         try:
             resp = requests.get(

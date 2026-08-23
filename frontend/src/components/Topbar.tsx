@@ -231,9 +231,9 @@ export default function Topbar({ onMenuToggle, onOpenCommandSearch }: TopbarProp
                 {/* Nav items */}
                 <div className="p-1.5">
                   {[
-                    { to: "/watchlist", icon: Star,     label: "Watchlists"  },
-                    { to: "/portfolio", icon: Briefcase, label: "Portfolio AI" },
-                    { to: "/settings",  icon: Settings,  label: "Settings"    },
+                    { to: "/watchlist", icon: Star,        label: "Watchlist"   },
+                    { to: "/analyse",   icon: BarChart3,   label: "Analyse"     },
+                    { to: "/pricing",   icon: ArrowUpRight, label: "Upgrade Pro" },
                   ].map(({ to, icon: Icon, label }) => (
                     <Link
                       key={to}

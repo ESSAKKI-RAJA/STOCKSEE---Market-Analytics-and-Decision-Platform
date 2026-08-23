@@ -8,21 +8,6 @@ export default function TickerBar() {
   useEffect(() => {
     const interval = setInterval(() => {
       setTime(new Date());
-      setItems((prevItems) => {
-        const newIndices = prevItems.slice(0, prevItems.length / 2).map((item) => {
-          // Simulate slight market movement
-          const volatility = item.value * 0.0005;
-          const change = (Math.random() - 0.48) * volatility;
-          const newValue = item.value + change;
-          const newChangePercent = item.change + (change / item.value) * 100;
-          return {
-            ...item,
-            value: newValue,
-            change: newChangePercent,
-          };
-        });
-        return [...newIndices, ...newIndices];
-      });
     }, 60000); // 60 seconds
 
     return () => clearInterval(interval);

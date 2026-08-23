@@ -1,19 +1,13 @@
 import { useNavigate } from "react-router-dom";
 import { 
-  ArrowRight, Activity, TrendingUp, Cpu, Compass, Map, Calendar, Gauge, Bitcoin, Star, Briefcase
+  ArrowRight, Activity, Star
 } from "lucide-react";
 import MarketContext from "../components/dashboard/MarketContext";
 import EmergingSignals from "../components/dashboard/EmergingSignals";
 
 const MODULES = [
   { name: "Global Markets", path: "/analyse", icon: Activity, desc: "Indices & macro tracking" },
-  { name: "Trending Volumes", path: "/screener", icon: TrendingUp, desc: "Highest volatility today" },
-  { name: "Quant Signals", path: "/advisor", icon: Cpu, desc: "AI generated signals" },
-  { name: "News Sentiment", path: "/news", icon: Compass, desc: "Real-time media mood" },
-  { name: "Sector Heatmap", path: "/heatmaps", icon: Map, desc: "Industry performance" },
-  { name: "Earnings Calendar", path: "/analyse", icon: Calendar, desc: "Corporate reports" },
-  { name: "Fear & Greed", path: "/analyse", icon: Gauge, desc: "Market psychology index" },
-  { name: "Watchlist Snapshot", path: "/watchlist", icon: Star, desc: "Tracked assets" },
+  { name: "Watchlist", path: "/watchlist", icon: Star, desc: "Tracked assets" },
 ];
 
 export default function Index() {

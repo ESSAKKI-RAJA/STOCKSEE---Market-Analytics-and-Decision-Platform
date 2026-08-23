@@ -34,12 +34,12 @@ const Pricing = () => {
           <p className="text-muted-foreground mb-6">For serious market participants</p>
           <div className="text-4xl font-bold mb-6">$19<span className="text-lg font-normal text-muted-foreground">/mo</span></div>
           <ul className="space-y-4 mb-8 flex-1">
-            <li className="flex items-center gap-3"><Check className="text-blue-accent w-5 h-5" /> Unlimited AI reports</li>
-            <li className="flex items-center gap-3"><Check className="text-blue-accent w-5 h-5" /> Advanced Quant Engine</li>
-            <li className="flex items-center gap-3"><Check className="text-blue-accent w-5 h-5" /> Unlimited watchlists</li>
-            <li className="flex items-center gap-3"><Check className="text-blue-accent w-5 h-5" /> Real-time alerts</li>
-            <li className="flex items-center gap-3"><Check className="text-blue-accent w-5 h-5" /> Portfolio AI</li>
-            <li className="flex items-center gap-3"><Check className="text-blue-accent w-5 h-5" /> Premium screeners</li>
+            <li className="flex items-center gap-3"><Check className="text-sky-500 w-5 h-5" /> Unlimited ESSAI Deep Analyses</li>
+            <li className="flex items-center gap-3"><Check className="text-sky-500 w-5 h-5" /> Advanced Technical Engine (RSI, MACD, EMAs)</li>
+            <li className="flex items-center gap-3"><Check className="text-sky-500 w-5 h-5" /> Unlimited Watchlists & Tracking</li>
+            <li className="flex items-center gap-3"><Check className="text-sky-500 w-5 h-5" /> Full Asset Comparison Engine</li>
+            <li className="flex items-center gap-3"><Check className="text-sky-500 w-5 h-5" /> Institutional Evidence & Confidence Reports</li>
+            <li className="flex items-center gap-3"><Check className="text-sky-500 w-5 h-5" /> Global Market Coverage</li>
           </ul>
           <button className="t-btn t-btn-primary w-full">Upgrade Now</button>
         </div>

@@ -43,8 +43,28 @@ class YFinanceProvider(MarketDataProvider):
 
     def get_history(self, symbol: str, period: str = "1mo") -> Optional[Dict[str, Any]]:
         try:
+            # Map standard/variant periods to valid yfinance parameters
+            period_norm_map = {
+                "1d": "1d",
+                "1w": "5d",
+                "1wk": "5d",
+                "5d": "5d",
+                "1m": "1mo",
+                "1mo": "1mo",
+                "3m": "3mo",
+                "3mo": "3mo",
+                "6m": "6mo",
+                "6mo": "6mo",
+                "1y": "1y",
+                "2y": "2y",
+                "3y": "5y",
+                "5y": "5y",
+                "10y": "10y",
+                "max": "max",
+            }
+            yf_period = period_norm_map.get(period.lower(), "1mo")
             ticker = yf.Ticker(symbol)
-            df = ticker.history(period=period)
+            df = ticker.history(period=yf_period)
             if df.empty:
                 return None
 

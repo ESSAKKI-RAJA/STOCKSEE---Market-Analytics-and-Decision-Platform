@@ -1,7 +1,6 @@
 import { Link } from "react-router-dom";
 import { TrendingUp, TrendingDown } from "lucide-react";
 import { Stock } from "@/data/stockData";
-import AnimatedMiniChart from "./MiniChart";
 import WatchlistButton from "./WatchlistButton";
 import { formatCurrency } from "@/lib/currency";
 import { motion } from "framer-motion";
@@ -77,9 +76,10 @@ export default function StockCard({ stock, isLive, source, delayLabel, discrepan
             </span>
           </div>
 
-          {/* Mini Chart */}
-          <div className="h-14 mb-4 opacity-80 group-hover:opacity-100 transition-opacity">
-            <AnimatedMiniChart isUp={isUp} />
+          <div className="absolute -bottom-2 -right-2 opacity-5 pointer-events-none transition-opacity group-hover:opacity-10 duration-500">
+            <svg width="120" height="60" viewBox="0 0 120 60" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <path d="M0 60L30 40L60 50L90 20L120 30" className={isUp ? "text-emerald-500" : "text-rose-500"} />
+            </svg>
           </div>
 
           {/* Price + Change */}
