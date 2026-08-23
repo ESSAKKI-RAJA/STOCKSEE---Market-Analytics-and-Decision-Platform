@@ -93,6 +93,7 @@ class FinnhubProvider(MarketDataProvider):
             data = resp.json()
             
             if data.get("s") != "ok":
+                logger.warning(f"Finnhub history returned status '{data.get('s')}' for {symbol}: {data}")
                 return None
                 
             rows = []

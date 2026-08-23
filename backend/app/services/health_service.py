@@ -6,11 +6,12 @@ from datetime import datetime, timezone
 
 
 def get_health_status() -> Dict[str, Any]:
+    from app.services.market_data_service import get_provider_status
+    market_status = get_provider_status()
+
     engines = {
         "market_data": {
-            "engine": "yfinance",
-            "status": "active",
-            "mode": "real_with_demo_fallback",
+            "provider_chain": market_status.get("provider_chain", [])
         },
         "news": {
             "engine": "finnhub" if settings.FINNHUB_API_KEY else "demo_fallback",

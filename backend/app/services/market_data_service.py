@@ -15,7 +15,12 @@ from app.services.providers import AlphaVantageProvider, FinnhubProvider, YFinan
 logger = logging.getLogger(__name__)
 
 # Instantiate providers in fallback order
-_PROVIDERS = [
+_QUOTE_PROVIDERS = [
+    FinnhubProvider(),
+    YFinanceProvider(),
+]
+
+_HISTORY_PROVIDERS = [
     AlphaVantageProvider(),
     FinnhubProvider(),
     YFinanceProvider(),
@@ -34,7 +39,7 @@ def get_market_quote(symbol: str) -> Dict[str, Any]:
     start_time = time.time()
     
     # 2. Try primary/secondary providers
-    for provider in _PROVIDERS:
+    for provider in _QUOTE_PROVIDERS:
         try:
             payload = provider.get_quote(symbol)
             if payload:
@@ -87,7 +92,7 @@ def get_market_history(symbol: str, period: str = "1mo") -> Dict[str, Any]:
 
     start_time = time.time()
     
-    for provider in _PROVIDERS:
+    for provider in _HISTORY_PROVIDERS:
         try:
             payload = provider.get_history(symbol, period)
             if payload and "rows" in payload and len(payload["rows"]) > 0:
@@ -129,19 +134,33 @@ def get_market_history(symbol: str, period: str = "1mo") -> Dict[str, Any]:
     return demo_payload
 
 def get_provider_status() -> Dict[str, Any]:
-    """Returns the ordered fallback hierarchy of providers."""
-    providers = []
-    for p in _PROVIDERS:
-        providers.append({
-            "name": p.name,
-            "mode": p.mode
+    """Returns the distinct fallback hierarchy of providers for quotes and history."""
+    quote_chain = []
+    for p in _QUOTE_PROVIDERS:
+        quote_chain.append({
+            "provider": p.name,
+            "capability": "quote",
+            "configured": p.mode != "demo" # Basic heuristic based on mode, but real config is checked inside
         })
-    providers.append({
-        "name": _DEMO_PROVIDER.name,
-        "mode": _DEMO_PROVIDER.mode
+    quote_chain.append({
+        "provider": _DEMO_PROVIDER.name,
+        "capability": "fallback",
+        "configured": True
     })
-    
+
+    history_chain = []
+    for p in _HISTORY_PROVIDERS:
+        history_chain.append({
+            "provider": p.name,
+            "capability": "history",
+            "configured": p.mode != "demo"
+        })
+    history_chain.append({
+        "provider": _DEMO_PROVIDER.name,
+        "capability": "fallback",
+        "configured": True
+    })
+
     return {
-        "hierarchy": providers,
-        "primary": providers[0]["name"] if providers else "demo"
+        "provider_chain": quote_chain + history_chain
     }
