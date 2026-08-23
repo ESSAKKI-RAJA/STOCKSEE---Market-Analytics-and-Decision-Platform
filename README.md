@@ -2,7 +2,7 @@
 
 > "Don't predict the market. Understand it."
 
-![STOCKSEE Banner](frontend/public/favicon.png) <!-- Replace with actual banner if available -->
+![STOCKSEE Banner](frontend/public/stocksee-logo.png)
 
 ## 🚀 Live Production
 
