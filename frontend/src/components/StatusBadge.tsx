@@ -49,7 +49,7 @@ export default function StatusBadge({
   cacheHit,
   variant = "bar",
 }: StatusBadgeProps) {
-  const { health } = useBackendHealth();
+  const { health, loading } = useBackendHealth();
 
   const displayMode = responseMode || (health.connected ? "connected" : "disconnected");
   const modeClass = modeColors[displayMode] || "bg-slate-500/15 text-slate-400 border-slate-500/30";
@@ -61,13 +61,26 @@ export default function StatusBadge({
         {/* Connection */}
         <span
           className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full text-[10px] font-bold tracking-wider border ${
-            health.connected
+            loading
+              ? "bg-slate-500/15 text-slate-400 border-slate-500/30 animate-pulse"
+              : health.connected
               ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
               : "bg-red-500/15 text-red-400 border-red-500/30"
           }`}
         >
-          {health.connected ? <Wifi size={10} /> : <WifiOff size={10} />}
-          {health.connected ? "CONNECTED" : "OFFLINE"}
+          {loading ? (
+            <>
+              <Clock size={10} /> CONNECTING...
+            </>
+          ) : health.connected ? (
+            <>
+              <Wifi size={10} /> CONNECTED
+            </>
+          ) : (
+            <>
+              <WifiOff size={10} /> OFFLINE
+            </>
+          )}
         </span>
 
         {/* Mode */}
@@ -108,12 +121,19 @@ export default function StatusBadge({
         {/* Backend connection */}
         <span
           className={`inline-flex items-center gap-1.5 px-2 py-0.5 rounded-full font-bold tracking-wider border ${
-            health.connected
+            loading
+              ? "bg-slate-500/15 text-slate-400 border-slate-500/30 animate-pulse"
+              : health.connected
               ? "bg-emerald-500/15 text-emerald-400 border-emerald-500/30"
               : "bg-red-500/15 text-red-400 border-red-500/30 animate-pulse"
           }`}
         >
-          {health.connected ? (
+          {loading ? (
+            <>
+              <Clock size={10} />
+              CONNECTING...
+            </>
+          ) : health.connected ? (
             <>
               <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 shadow-[0_0_4px_rgba(16,185,129,0.6)]" />
               BACKEND CONNECTED
