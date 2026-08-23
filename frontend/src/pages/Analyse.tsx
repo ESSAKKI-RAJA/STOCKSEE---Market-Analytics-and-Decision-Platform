@@ -45,7 +45,6 @@ export default function Analyse() {
   const handleRefresh = async () => {
     setRefreshing(true);
     await refreshPrices();
-    await new Promise(r => setTimeout(r, 800)); // fake delay for crypto
     setRefreshing(false);
   };
 
