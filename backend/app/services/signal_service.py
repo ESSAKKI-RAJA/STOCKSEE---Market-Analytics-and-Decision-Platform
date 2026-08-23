@@ -124,6 +124,68 @@ def detect_conflicts(tech: Dict, sent: Dict) -> List[str]:
     return conflicts
 
 
+def compute_confidence_score(
+    quality: str, tech: Dict, sent: Dict, conflicts: List[str]
+) -> tuple[int, List[str]]:
+    """
+    Deterministic confidence score methodology.
+
+    Base score tied to data quality:
+        HIGH   = 60
+        MEDIUM = 40
+        LOW    = 20
+        other  = 10
+
+    Bonuses:
+        + 5 per aligned bullish signal (tech + sentiment both bullish)
+        + 5 per aligned bearish signal
+        + 5 if zero conflicts
+
+    Penalties:
+        -10 per detected conflict
+        - 5 per missing evidence type (no technicals, no sentiment)
+
+    Clamped to [0, 100].
+    Returns (score, explanation_list)
+    """
+    quality_base = {"HIGH": 60, "MEDIUM": 40, "LOW": 20}.get(quality, 10)
+    score = quality_base
+    explanation = []
+
+    explanation.append(f"Base score {score}/100 from data quality: {quality}.")
+
+    # Alignment bonus
+    tech_bullish = tech["bullish_points"] > 0
+    tech_bearish = tech["bearish_points"] > 0
+    sent_bullish = sent["bullish_points"] > 0
+    sent_bearish = sent["bearish_points"] > 0
+
+    if (tech_bullish and sent_bullish) or (tech_bearish and sent_bearish):
+        score += 5
+        explanation.append("Technical and sentiment signals agree (+5).")
+
+    if not conflicts:
+        score += 5
+        explanation.append("No conflicting signals detected (+5).")
+
+    # Conflict penalties
+    for _ in conflicts:
+        score -= 10
+    if conflicts:
+        explanation.append(f"{len(conflicts)} conflict(s) detected (-{len(conflicts) * 10}).")
+
+    # Missing data penalty
+    if not tech.get("bullish_points") and not tech.get("bearish_points"):
+        score -= 5
+        explanation.append("Insufficient technical data available (-5).")
+
+    if not sent.get("bullish_points") and not sent.get("bearish_points"):
+        score -= 5
+        explanation.append("No usable sentiment data (-5).")
+
+    return max(0, min(100, score)), explanation
+
+
 def generate_signal(indicators: Dict[str, Any], sentiment: Dict[str, Any], prediction: Dict[str, Any]) -> Dict[str, Any]:
     """Generate deterministic decision support based on strict evidence rules."""
     if not indicators.get("available", False):
@@ -141,7 +203,7 @@ def generate_signal(indicators: Dict[str, Any], sentiment: Dict[str, Any], predi
     total_bullish = tech_state["bullish_points"] + sent_state["bullish_points"]
     total_bearish = tech_state["bearish_points"] + sent_state["bearish_points"]
 
-    # Final Labeling - Pure evidence count, no arbitrary percentages
+    # Final Labeling — pure evidence count, no arbitrary percentages
     label = "Neutral / Wait"
     if quality == "LOW":
         label = "High Uncertainty"
@@ -152,7 +214,12 @@ def generate_signal(indicators: Dict[str, Any], sentiment: Dict[str, Any], predi
     elif total_bearish >= total_bullish + 2:
         label = "Bearish Setup"
 
-    # Confidence Engine - Tied to data quality and consensus
+    # Numeric confidence score with explanation
+    confidence_score, confidence_explanation = compute_confidence_score(
+        quality, tech_state, sent_state, conflicts
+    )
+
+    # Legacy confidence label
     confidence = "Low"
     if quality == "HIGH":
         if len(conflicts) == 0:
@@ -162,23 +229,23 @@ def generate_signal(indicators: Dict[str, Any], sentiment: Dict[str, Any], predi
     elif quality == "MEDIUM":
         confidence = "Low-Medium" if len(conflicts) == 0 else "Low"
 
-    # Risk Engine - Explicit triggers
+    # Risk Engine
     risk_level = "LOW"
     risk_flags = []
-    
+
     volatility = indicators.get("volatility", 0)
     sma_20 = indicators.get("moving_averages", {}).get("sma_20", 1)
     if sma_20 > 0 and volatility > sma_20 * 0.05:
         risk_flags.append("High historical volatility")
         risk_level = "ELEVATED"
-    
+
     if len(conflicts) >= 2:
         risk_level = "MODERATE" if risk_level == "LOW" else "ELEVATED"
-        
+
     if tech_state["extension"] != "Neutral":
         risk_flags.append(f"Extreme RSI condition: {tech_state['extension']}")
         risk_level = "ELEVATED"
-        
+
     if quality == "LOW":
         risk_level = "HIGH"
         risk_flags.append("Data quality is LOW (using demo or fallback data)")
@@ -194,6 +261,8 @@ def generate_signal(indicators: Dict[str, Any], sentiment: Dict[str, Any], predi
     return {
         "signal_label": label,
         "confidence": confidence,
+        "confidence_score": confidence_score,
+        "confidence_explanation": confidence_explanation,
         "risk_level": risk_level,
         "bullish_evidence": tech_state["bullish_evidence"] + sent_state["bullish_evidence"],
         "bearish_evidence": tech_state["bearish_evidence"] + sent_state["bearish_evidence"],
@@ -213,6 +282,8 @@ def generate_signal(indicators: Dict[str, Any], sentiment: Dict[str, Any], predi
             "generated_at": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
         },
     }
+
+
 
 
 def _empty_signal() -> Dict[str, Any]:

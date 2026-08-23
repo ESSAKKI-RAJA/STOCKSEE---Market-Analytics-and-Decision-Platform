@@ -24,6 +24,8 @@ from app.services.cache_service import get_cached_payload, set_cached_payload
 from app.api.ai import router as ai_router
 from app.api.stocks import router as stocks_router
 from app.api.system import router as system_router
+from app.api.essai import router as essai_router
+from app.services.company_service import get_company_profile
 from app.db.session import engine
 from app.models.base import Base
 from app.models.user import User  # Ensure User is registered with Base
@@ -48,6 +50,7 @@ app.add_middleware(
 app.include_router(ai_router, prefix="/api/ai", tags=["ai"])
 app.include_router(stocks_router, prefix="/api/stocks", tags=["stocks"])
 app.include_router(system_router, prefix="/api", tags=["system"])
+app.include_router(essai_router, prefix="/api/essai", tags=["essai"])
 
 
 # ─── Utility ────────────────────────────────────────────────────
@@ -114,17 +117,24 @@ def quotes_batch(req: SymbolsRequest):
 
 
 @app.get("/api/market/history/{symbol}")
-def history(symbol: str):
-    data = get_market_history(symbol)
+def history(symbol: str, period: str = "1mo"):
+    """Fetch historical OHLCV data. period: 1d, 1w, 1mo, 3mo, 6mo, 1y, 3y, 5y, max"""
+    data = get_market_history(symbol, period=period)
     mode, source, gen_at = _meta(data, "demo", "yfinance")
     rows = data.get("rows", [])
     return FallbackResponse(
         status="ok",
         mode=mode,
         source=source,
-        message=f"History for {symbol} ({len(rows)} points)",
-        data=rows,
-        limitations="Historical data from yfinance." if mode == "real" else "Using demo historical data.",
+        message=f"History for {symbol} ({len(rows)} points, period={period})",
+        data={
+            "rows": rows,
+            "period": period,
+            "data_points": len(rows),
+            "source": source,
+            "mode": mode,
+        },
+        limitations="Historical data from real providers." if mode == "real" else "Using demo historical data.",
     )
 
 
@@ -224,13 +234,17 @@ def signal(symbol: str):
 
 @app.get("/api/company/{symbol}")
 def company(symbol: str):
+    data = get_company_profile(symbol)
+    mode = data.get("_meta", {}).get("mode", "unknown")
+    source = data.get("source", "unknown")
+    is_fallback = data.get("is_fallback", False)
     return FallbackResponse(
         status="ok",
-        mode="demo",
-        source="demo",
-        message="Company profile using demo data",
-        data={"symbol": symbol, "name": f"{symbol} Corporation", "sector": "Technology", "industry": "Software"},
-        limitations="Company profile not yet connected to a real data source.",
+        mode=mode,
+        source=source,
+        message=f"Company profile for {symbol}",
+        data=data,
+        limitations="Company profile from curated/Finnhub data." if not is_fallback else "Company profile unavailable — data not found for this symbol.",
     )
 
 

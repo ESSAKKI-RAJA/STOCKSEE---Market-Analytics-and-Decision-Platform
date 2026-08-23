@@ -1,9 +1,10 @@
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import { useStockPrices } from "@/hooks/useStockPrices";
 import StockCard from "@/components/StockCard";
-import { Search, Globe, RefreshCw, BarChart2, Activity, TrendingUp, TrendingDown, ArrowUpRight, ArrowDownRight, Zap, Target, BarChart3, MessageSquare, Database } from "lucide-react";
+import { Search, Globe, RefreshCw, BarChart2, Activity } from "lucide-react";
 import { motion } from "framer-motion";
 import { useLocation } from "react-router-dom";
+
 
 const assetClasses = ["Stocks", "Crypto"];
 const exchanges = ["All", "NSE", "BSE", "NASDAQ", "NYSE", "LSE", "TSE", "HKEX", "XETRA"];
@@ -24,19 +25,6 @@ function FilterPill({ label, active, onClick }: { label: string; active: boolean
   );
 }
 
-const MOCK_CRYPTO = [
-  { symbol: "BTC", name: "Bitcoin", price: 68430.50, change: 2.4, vol: "42.5B", cap: "1.3T", rsi: 65, trend: "Bullish" },
-  { symbol: "ETH", name: "Ethereum", price: 3450.20, change: 1.8, vol: "18.2B", cap: "410B", rsi: 58, trend: "Bullish" },
-  { symbol: "SOL", name: "Solana", price: 145.80, change: -3.2, vol: "5.1B", cap: "65B", rsi: 42, trend: "Neutral" },
-  { symbol: "BNB", name: "Binance Coin", price: 590.40, change: 0.5, vol: "1.2B", cap: "89B", rsi: 55, trend: "Bullish" },
-  { symbol: "XRP", name: "Ripple", price: 0.62, change: -1.1, vol: "2.3B", cap: "34B", rsi: 48, trend: "Neutral" },
-  { symbol: "DOGE", name: "Dogecoin", price: 0.15, change: 5.6, vol: "3.5B", cap: "22B", rsi: 72, trend: "Strong Bullish" },
-  { symbol: "ADA", name: "Cardano", price: 0.58, change: -0.4, vol: "450M", cap: "20B", rsi: 45, trend: "Neutral" },
-  { symbol: "AVAX", name: "Avalanche", price: 45.20, change: 4.1, vol: "850M", cap: "17B", rsi: 61, trend: "Bullish" },
-  { symbol: "DOT", name: "Polkadot", price: 8.40, change: -2.5, vol: "320M", cap: "12B", rsi: 38, trend: "Bearish" },
-  { symbol: "LINK", name: "Chainlink", price: 18.50, change: 1.2, vol: "410M", cap: "11B", rsi: 52, trend: "Neutral" },
-  { symbol: "MATIC", name: "Polygon", price: 0.95, change: -1.8, vol: "280M", cap: "9B", rsi: 41, trend: "Bearish" },
-];
 
 export default function Analyse() {
   const location = useLocation();
@@ -213,168 +201,34 @@ export default function Analyse() {
 
       {/* ========================================= */}
       {/* CRYPTO VIEW */}
-      {/* ========================================= */}
-      {assetClass === "Crypto" && (
-        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-8">
-          
-          {/* Advanced Analytics Row */}
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
-            <div className="glass-panel p-4 flex items-center gap-4 bg-[var(--panel-1)]">
-              <div className="w-10 h-10 rounded-full bg-[rgba(245,158,11,0.1)] text-[var(--yellow)] flex items-center justify-center">
-                <Target size={20} />
-              </div>
-              <div>
-                <div className="text-xs text-[var(--text-muted)] font-bold uppercase tracking-wider mb-1">Fear & Greed</div>
-                <div className="text-xl font-bold text-[var(--text-1)]">72 <span className="text-sm text-[var(--green)]">Greed</span></div>
-              </div>
+      {/* ========================================= */}      {assetClass === "Crypto" && (
+        <motion.div initial={{ opacity: 0 }} animate={{ opacity: 1 }} className="space-y-6">
+          <div className="glass-panel p-8 bg-[var(--panel-1)] text-center flex flex-col items-center gap-4">
+            <div className="w-14 h-14 rounded-2xl bg-[rgba(59,130,246,0.08)] border border-[rgba(59,130,246,0.15)] flex items-center justify-center">
+              <BarChart2 className="w-7 h-7 text-[var(--blue)] opacity-60" />
             </div>
-            <div className="glass-panel p-4 flex items-center gap-4 bg-[var(--panel-1)]">
-              <div className="w-10 h-10 rounded-full bg-[rgba(59,130,246,0.1)] text-[var(--blue)] flex items-center justify-center">
-                <BarChart3 size={20} />
-              </div>
-              <div>
-                <div className="text-xs text-[var(--text-muted)] font-bold uppercase tracking-wider mb-1">BTC Dominance</div>
-                <div className="text-xl font-bold text-[var(--text-1)]">52.4%</div>
-              </div>
+            <div>
+              <h3 className="text-lg font-bold text-[var(--text-1)] mb-2">Crypto Data Not Yet Connected</h3>
+              <p className="text-sm text-[var(--text-muted)] max-w-md">
+                STOCKSEE does not currently have a live crypto market data provider configured.
+                Displaying demo or fabricated crypto data would violate our data-trust principles.
+              </p>
+              <p className="text-xs text-[var(--text-muted)] mt-3 opacity-70">
+                Real-time stock analysis is available on the Stocks tab.
+              </p>
             </div>
-            <div className="glass-panel p-4 flex items-center gap-4 bg-[var(--panel-1)]">
-              <div className="w-10 h-10 rounded-full bg-[rgba(16,185,129,0.1)] text-[var(--green)] flex items-center justify-center">
-                <Zap size={20} />
-              </div>
-              <div>
-                <div className="text-xs text-[var(--text-muted)] font-bold uppercase tracking-wider mb-1">ETH Gas Trend</div>
-                <div className="text-xl font-bold text-[var(--text-1)]">12 Gwei</div>
-              </div>
-            </div>
-            <div className="glass-panel p-4 flex items-center gap-4 bg-[var(--panel-1)]">
-              <div className="w-10 h-10 rounded-full bg-[rgba(239,68,68,0.1)] text-[var(--red)] flex items-center justify-center">
-                <MessageSquare size={20} />
-              </div>
-              <div>
-                <div className="text-xs text-[var(--text-muted)] font-bold uppercase tracking-wider mb-1">Social Sentiment</div>
-                <div className="text-xl font-bold text-[var(--text-1)]">Bullish</div>
-              </div>
-            </div>
-          </div>
-
-          <div className="grid grid-cols-1 lg:grid-cols-4 gap-6">
-            
-            {/* Top Coins Table */}
-            <div className="lg:col-span-3 glass-panel overflow-hidden bg-[var(--panel-1)]">
-              <div className="t-header border-b border-[var(--border-1)] bg-[var(--surface-2)] px-6 py-4">
-                <h3 className="font-bold text-[var(--text-1)] flex items-center gap-2">
-                  <Database size={18} className="text-[var(--blue)]" />
-                  Top Cryptocurrencies
-                </h3>
-              </div>
-              <div className="overflow-x-auto">
-                <table className="t-table w-full">
-                  <thead>
-                    <tr>
-                      <th className="text-left px-6 py-3">Asset</th>
-                      <th className="text-right px-6 py-3">Price</th>
-                      <th className="text-right px-6 py-3">24h %</th>
-                      <th className="text-right px-6 py-3">Volume</th>
-                      <th className="text-right px-6 py-3">Market Cap</th>
-                      <th className="text-right px-6 py-3">RSI</th>
-                      <th className="text-right px-6 py-3">Trend</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {MOCK_CRYPTO.map((coin) => (
-                      <tr key={coin.symbol} className="border-b border-[var(--border-1)] hover:bg-[var(--surface-2)] transition-colors">
-                        <td className="px-6 py-4">
-                          <div className="flex items-center gap-3">
-                            <div className="w-8 h-8 rounded-full bg-[var(--surface-2)] border border-[var(--border-1)] flex items-center justify-center font-bold text-xs text-[var(--text-1)]">
-                              {coin.symbol[0]}
-                            </div>
-                            <div>
-                              <div className="font-bold text-[var(--text-1)]">{coin.symbol}</div>
-                              <div className="text-xs text-[var(--text-muted)]">{coin.name}</div>
-                            </div>
-                          </div>
-                        </td>
-                        <td className="px-6 py-4 font-mono font-medium text-[var(--text-1)] text-right">
-                          ${coin.price < 1 ? coin.price.toFixed(4) : coin.price.toLocaleString(undefined, { minimumFractionDigits: 2 })}
-                        </td>
-                        <td className={`px-6 py-4 font-mono font-bold text-right ${coin.change >= 0 ? "text-[var(--green)]" : "text-[var(--red)]"}`}>
-                          {coin.change > 0 ? "+" : ""}{coin.change}%
-                        </td>
-                        <td className="px-6 py-4 font-mono text-[var(--text-2)] text-right">{coin.vol}</td>
-                        <td className="px-6 py-4 font-mono text-[var(--text-2)] text-right">{coin.cap}</td>
-                        <td className="px-6 py-4 font-mono text-[var(--text-2)] text-right">{coin.rsi}</td>
-                        <td className="px-6 py-4 text-right">
-                          <span className={`inline-flex items-center gap-1 text-xs font-bold px-2 py-1 rounded ${
-                            coin.change > 0 ? "bg-[rgba(16,185,129,0.1)] text-[var(--green)]" : coin.change < 0 ? "bg-[rgba(239,68,68,0.1)] text-[var(--red)]" : "bg-[var(--surface-2)] text-[var(--text-muted)]"
-                          }`}>
-                            {coin.change > 0 ? <TrendingUp size={12} /> : <TrendingDown size={12} />}
-                            {coin.trend}
-                          </span>
-                        </td>
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              </div>
-            </div>
-
-            {/* Sidebar Analytics */}
-            <div className="space-y-6">
-              <div className="glass-panel p-5 bg-[var(--panel-1)]">
-                <h4 className="font-bold text-[var(--text-1)] mb-4 flex items-center justify-between">
-                  Top Gainers
-                  <ArrowUpRight size={16} className="text-[var(--green)]" />
-                </h4>
-                <div className="space-y-4">
-                  {MOCK_CRYPTO.filter(c => c.change > 0).sort((a,b) => b.change - a.change).slice(0,3).map(c => (
-                    <div key={c.symbol} className="flex justify-between items-center">
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-[13px] text-[var(--text-1)]">{c.symbol}</span>
-                      </div>
-                      <span className="font-mono text-xs font-bold text-[var(--green)]">+{c.change}%</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="glass-panel p-5 bg-[var(--panel-1)]">
-                <h4 className="font-bold text-[var(--text-1)] mb-4 flex items-center justify-between">
-                  Top Losers
-                  <ArrowDownRight size={16} className="text-[var(--red)]" />
-                </h4>
-                <div className="space-y-4">
-                  {MOCK_CRYPTO.filter(c => c.change < 0).sort((a,b) => a.change - b.change).slice(0,3).map(c => (
-                    <div key={c.symbol} className="flex justify-between items-center">
-                      <div className="flex items-center gap-2">
-                        <span className="font-bold text-[13px] text-[var(--text-1)]">{c.symbol}</span>
-                      </div>
-                      <span className="font-mono text-xs font-bold text-[var(--red)]">{c.change}%</span>
-                    </div>
-                  ))}
-                </div>
-              </div>
-
-              <div className="glass-panel p-5 bg-[var(--panel-1)]">
-                <h4 className="font-bold text-[var(--text-1)] mb-4">Whale Activity</h4>
-                <div className="space-y-3">
-                  <div className="text-xs flex justify-between p-2 bg-[var(--surface-2)] rounded">
-                    <span className="text-[var(--text-muted)]">12,500 BTC</span>
-                    <span className="text-[var(--blue)] font-bold">Transfer</span>
-                  </div>
-                  <div className="text-xs flex justify-between p-2 bg-[var(--surface-2)] rounded">
-                    <span className="text-[var(--text-muted)]">150M USDT</span>
-                    <span className="text-[var(--green)] font-bold">Minted</span>
-                  </div>
-                  <div className="text-xs flex justify-between p-2 bg-[var(--surface-2)] rounded">
-                    <span className="text-[var(--text-muted)]">50,000 ETH</span>
-                    <span className="text-[var(--red)] font-bold">To Exchange</span>
-                  </div>
-                </div>
-              </div>
-            </div>
+            <button
+              onClick={() => setAssetClass("Stocks")}
+              className="t-btn bg-[var(--surface-2)] hover:bg-[var(--surface-1)]"
+            >
+              View Stocks
+            </button>
           </div>
         </motion.div>
       )}
+
+
+
 
 
 

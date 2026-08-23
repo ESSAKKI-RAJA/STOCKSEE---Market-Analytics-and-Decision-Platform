@@ -13,6 +13,8 @@ class Settings(BaseSettings):
     CLERK_PUBLISHABLE_KEY: str = ""
     CLERK_SECRET_KEY: str = ""
     ALPHA_VANTAGE_API_KEY: str = ""
+    GEMINI_API_KEY: str = ""
+    OPENAI_API_KEY: str = ""
     DISABLE_FINBERT: bool = False
 
     @property
